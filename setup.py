@@ -25,6 +25,7 @@ setup(
     author='Matei-Marius Micu',
     author_email='contact@mateimicu.com	',
     license='MIT',
+    url="https://github.com/mateimicu/auto-tag",
     classifiers=[
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3',

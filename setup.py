@@ -17,7 +17,7 @@ README = open(
 # This call to setup() does all the work
 setup(
     name='auto-tag',
-    version='0.0.1',
+    version='0.1.0',
     description='Automatically tag a branch based on commit message',
     long_description=README,
     long_description_content_type='text/markdown',
@@ -36,4 +36,8 @@ setup(
             'auto-tag=auto_tag.__main__:main',
         ]
     },
+    install_reqs=[
+        'gitpython',
+        'semantic_version',
+    ]
 )

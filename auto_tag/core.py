@@ -40,7 +40,7 @@ def get_latest_tag(repo):
     return semantic_version.Version('0.0.1')
 
 
-def get_next_tag(tag, change_type):
+def bump_tag(tag, change_type):
     """Return the next tag version based on the change type."""
     if change_type == MAJOR:
         return tag.next_major()
@@ -128,17 +128,14 @@ def get_change_type(commits):
     return change_type
 
 
-def main():
-    """Main entry point."""
-    branch = 'master'
-    origin_to_push_to = 'origin'
-    repo = Repo('.')
+def work(args):
+    """Main entry point.
+
+    :param args: Argument to work on
+    """
+    repo = Repo(args.repo)
     last_tag = get_latest_tag(repo)
-    commits = get_all_commits_from_a_tag(repo, branch, last_tag)
+    commits = get_all_commits_from_a_tag(repo, args.branch, last_tag)
     type_of_change = get_change_type(commits)
-    next_tag = get_next_tag(last_tag, type_of_change)
+    next_tag = bump_tag(last_tag, type_of_change)
     repo.create_tag(str(next_tag))
-
-
-if __name__ == '__main__':
-    main()

@@ -2,12 +2,15 @@
 """
 Package entry point.
 """
+import sys
 
-import auto_tag.auto_tag
+from auto_tag import core, cli
 
 
 def main():
-    auto_tag.auto_tag.main()
+    parser = cli.get_parser()
+    args = parser.parse_args(sys.argv[1:])
+    core.work(args)
 
 
 if __name__ == '__main__':

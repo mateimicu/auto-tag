@@ -65,10 +65,13 @@ def get_all_commits_from_a_tag(repo, branch, tag):
     :returns: List of commits.
     :rtype: list of git.Commit
     """
-    git_tag = repo.tags[str(tag)]
+    stop_commit = None
+    if str(tag) in repo.tags:
+        stop_commit = repo.tags[str(tag)].commit
+
     commits = []
     for commit in repo.iter_commits(rev=branch):
-        if commit == git_tag.commit:
+        if commit == stop_commit:
             break
         commits.append(commit)
     return commits
@@ -128,6 +131,13 @@ def get_change_type(commits):
     return change_type
 
 
+def get_remote(repo, name):
+    """Return the git.Remote object base on the name."""
+    for remote in repo.remotes:
+        if remote.name == name:
+            return remote
+
+
 def work(args):
     """Main entry point.
 
@@ -139,3 +149,8 @@ def work(args):
     type_of_change = get_change_type(commits)
     next_tag = bump_tag(last_tag, type_of_change)
     repo.create_tag(str(next_tag))
+
+    for remote_name in args.upstream_remote:
+        remote = get_remote(repo, remote_name)
+        if remote:
+            remote.push(str(next_tag))

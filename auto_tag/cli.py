@@ -13,7 +13,8 @@ def get_parser():
                         help='On what branch to work on. Default `master`')
     parser.add_argument('-r', '--repo', type=str, default='.',
                         help='Path to repository. Default `.`')
-    parser.add_argument('-u', '--upstream_remote', type=str, default='origin',
-                        help='To what remote to push to. Default `origin`')
+    parser.add_argument('-u', '--upstream_remote', type=str, nargs='+',
+                        help=('To what remote to push to.'
+                              'Can be specified multiple time.'))
 
     return parser

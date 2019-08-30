@@ -126,7 +126,6 @@ Date:   Fri Aug 30 19:50:25 2019 +0300
 ```
 
 Todo
-- push the tag to a remote (or multiple)
 - add logging
 - add documentation
 - add sanity tests

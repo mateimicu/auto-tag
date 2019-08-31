@@ -1,0 +1,44 @@
+name: Publish Module
+
+on:
+  push:
+    paths:
+    # This pattern removes possible paths but doesn't include any positive matches
+    - 'setup.py'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 1
+      matrix:
+        python-version: [3.7]
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -r test-requirements.txt
+        pip install -e .
+    - name: Start linting
+      run: |
+        pylint --rcfile=.pylintrc auto_tag
+    - name: Test with pytest
+      run: |
+        pytest auto_tag
+    - name: Publish
+      env: # Or as an environment variable
+        TEST_PYPI_USERNAME : ${{ secrets.test_pypi_username}}
+        TEST_PYPI_PASSWORD : ${{ secrets.test_pypi_password }}
+        PYPI_USERNAME : ${{ secrets.pypi_username}}
+        PYPI_PASSWORD : ${{ secrets.pypi_password }}
+      run: |
+        ./ci/prepare-config-file.sh
+        ./ci/publish.sh

@@ -17,6 +17,7 @@ def get_parser():
     parser.add_argument('-u', '--upstream_remote', type=str, nargs='+',
                         help=('To what remote to push to.'
                               'Can be specified multiple time.'))
+    #  pylint:disable=no-member, protected-access
     parser.add_argument('-l', '--logging', type=str, default='INFO',
                         help='Logging level.',
                         choices=list(logging._nameToLevel.keys()))

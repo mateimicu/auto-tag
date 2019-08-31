@@ -16,6 +16,7 @@ def main():
     args = parser.parse_args(sys.argv[1:])
 
     logger = logging.getLogger(__name__)
+    # pylint:disable=no-member, protected-access
     logger.setLevel(logging._nameToLevel[args.logging])
     console_handler = logging.StreamHandler()
     console_handler.setLevel(logging.DEBUG)

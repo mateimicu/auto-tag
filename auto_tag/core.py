@@ -22,7 +22,7 @@ CHANGE_TYPES = {
 PREFIX_TO_ELIMINATE = ['v']
 
 
-class AutoTag(object):
+class AutoTag():
     """Class  wrapper for auto-tag functionality."""
 
     def __init__(self, repo, branch, upstream_remotes, logger=None):
@@ -72,8 +72,10 @@ class AutoTag(object):
 
         if change_type == MAJOR:
             return tag.next_major()
-        elif change_type == MINOR:
+
+        if change_type == MINOR:
             return tag.next_minor()
+
         return tag.next_patch()
 
     def get_all_commits_from_a_tag(self, repo, branch, tag):

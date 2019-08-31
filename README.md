@@ -9,6 +9,7 @@ The flow is as follows:
 	* if it starts with `feature(` -> MINOR
 	* if it has `BREAKIN_CHANGE` in the message -> MAJOR
 - bump the last tag with the approbate change 
+- if an upstream was specified push the tag to that upstream
 
 ```bash
 ~ $ auto-tag  -h

@@ -51,11 +51,10 @@ class AutoTag(object):
         :param repo: Repository to query for tags
         :type repo: git.Repo
 
-        :returns: The latest tag from the repository. If there are not tags it
-                  will return `0.0.1`
+        :returns: The latest tag from the repository
         :rtype: semantic_version.Version
         """
-        latest_tag = semantic_version.Version('0.0.1')
+        latest_tag = None
         tags_name = [self._clean_tag_name(tag.name) for tag in repo.tags]
         sem_versions = [
             semantic_version.Version(tag_name) for tag_name in tags_name
@@ -68,6 +67,9 @@ class AutoTag(object):
     @staticmethod
     def bump_tag(tag, change_type):
         """Return the next tag version based on the change type."""
+        if tag is None:
+            return semantic_version.Version('0.0.1')
+
         if change_type == MAJOR:
             return tag.next_major()
         elif change_type == MINOR:
@@ -167,6 +169,21 @@ class AutoTag(object):
                 return remote
         return None
 
+    def push_to_remotes(self, repo, tag):
+        """Push a tag to the specified remotes."""
+        if self._upstream_remotes:
+            self._logger.info('Start pushing to remotes.')
+        else:
+            self._logger.info('No push remote was specified')
+        for remote_name in self._upstream_remotes:
+            remote = self.get_remote(repo, remote_name)
+            if remote:
+                self._logger.info('Push %s to %s', tag, remote)
+                remote.push(str(tag))
+            else:
+                self._logger.error(
+                    'Can\'t find remote with name `%s`', remote_name)
+
     def work(self):
         """Main entry point.
 
@@ -175,6 +192,8 @@ class AutoTag(object):
         repo = Repo(self._repo)
         self._logger.info('Start tagging %s', repo)
         last_tag = self.get_latest_tag(repo)
+
+        self._logger.info('Found tag %s', last_tag)
         commits = self.get_all_commits_from_a_tag(
             repo, self._branch, last_tag)
         type_of_change = self.get_change_type(commits)
@@ -182,15 +201,5 @@ class AutoTag(object):
 
         self._logger.info('Bumping tag %s -> %s', last_tag, next_tag)
         repo.create_tag(str(next_tag))
-        if self._upstream_remotes:
-            self._logger.info('Start pushing to remotes.')
-        else:
-            self._logger.info('No push remote was specified')
-        for remote_name in self._upstream_remotes:
-            remote = self.get_remote(repo, remote_name)
-            if remote:
-                self._logger.info('Push %s to %s', next_tag, remote)
-                remote.push(str(next_tag))
-            else:
-                self._logger.error(
-                    'Can\'t find remote with name `%s`', remote_name)
+
+        self.push_to_remotes(repo, next_tag)

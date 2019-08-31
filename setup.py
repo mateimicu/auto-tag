@@ -18,14 +18,14 @@ README = open(
 # This call to setup() does all the work
 setup(
     name='auto-tag',
-    version='0.2.0',
+    version='0.2.1',
     description='Automatically tag a branch based on commit message',
     long_description=README,
     long_description_content_type='text/markdown',
     author='Matei-Marius Micu',
     author_email='contact@mateimicu.com	',
     license='MIT',
-    url="https://github.com/mateimicu/auto-tag",
+    url='https://github.com/mateimicu/auto-tag',
     classifiers=[
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3',

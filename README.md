@@ -131,7 +131,7 @@ Date:   Fri Aug 30 19:50:25 2019 +0300
 ```
 
 Todo
-- add sanity tests
+- message of the tag should be a changelog of commits
 - add licensing and how to contribute informations
 - add a pipeline for tests/linting (and maybe publishing)
 - configure markers for MINOR and MAJOR

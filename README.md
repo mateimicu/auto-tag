@@ -36,6 +36,9 @@ so the latest know tag (`0.2.1`) was bumped to `0.3.0`
 9ef3be6 (tag: 0.2.1) commit #2
 0ee81b0 commit #1
 ~ $ auto-tag
+2019-08-31 14:10:24,626: Start tagging <git.Repo "/Users/matei/git/test-auto-tag-branch/.git">
+2019-08-31 14:10:24,649: Bumping tag 0.2.1 -> 0.3.0
+2019-08-31 14:10:24,658: No push remote was specified
 ~ $ git log --oneline
 2245d5d (HEAD -> master, tag: 0.3.0) feature(component) commit #4
 939322f commit #3
@@ -83,9 +86,10 @@ Author: Matei-Marius Micu <micumatei@gmail.com>
 Date:   Fri Aug 30 19:50:25 2019 +0300
 
     commit #1
-(.venv) matei @ RO-IAS-LPT-C02VW35WG8WN ~/git/test-auto-tag-branch (master)
 ~ $ auto-tag
-(.venv) matei @ RO-IAS-LPT-C02VW35WG8WN ~/git/test-auto-tag-branch (master)
+2019-08-31 14:10:24,626: Start tagging <git.Repo "/Users/matei/git/test-auto-tag-branch/.git">
+2019-08-31 14:10:24,649: Bumping tag 0.2.1 -> 1.0.0
+2019-08-31 14:10:24,658: No push remote was specified
 ~ $ git log
 commit 0de444695e3208b74d0b3ed7fd20fd0be4b2992e (HEAD -> master, tag: 1.0.0)
 Author: Matei-Marius Micu <micumatei@gmail.com>
@@ -127,8 +131,6 @@ Date:   Fri Aug 30 19:50:25 2019 +0300
 ```
 
 Todo
-- add logging
-- add documentation
 - add sanity tests
 - add licensing and how to contribute informations
 - add a pipeline for tests/linting (and maybe publishing)

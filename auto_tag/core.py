@@ -150,7 +150,7 @@ def work(args):
     next_tag = bump_tag(last_tag, type_of_change)
     repo.create_tag(str(next_tag))
 
-    for remote_name in args.upstream_remote:
+    for remote_name in args.upstream_remote if args.upstream_remote else []:
         remote = get_remote(repo, remote_name)
         if remote:
             remote.push(str(next_tag))

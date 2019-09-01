@@ -38,7 +38,7 @@ class BaseDetector():
 
     def validate_detector_params(self):
         """Check if all the parameters given to the detector make sens."""
-        if self._change_type not in constants.CHANGE_TYPES.keys():
+        if self._change_type not in constants.CHANGE_TYPES.values():
             raise exception.DetectorValidationException(
                 ('Change type {} is not in not valid. Accepted'
                  ' change types are {}').format(
@@ -76,14 +76,16 @@ class BasePatternBaseDetector(BaseDetector):
     def validate_detector_params(self):
         """Check if all the parameters given to the detector make sens."""
         super(BasePatternBaseDetector, self).validate_detector_params()
-        raise exception.DetectorValidationException(
-            ('Patter: {} is not valid.'
-             'it must be specified and of type string').format(self._pattern))
+        if not isinstance(self._pattern, str):
+            raise exception.DetectorValidationException(
+                ('Patter: {} is not valid.'
+                 'it must be specified and of type string').format(
+                     self._pattern))
 
     def _prepare_commit_message(self, commit):
         """Get the prepared commit message according to the config."""
         message = commit.message
-        if self._case_sensitive:
+        if not self._case_sensitive:
             message = message.lower()
         if self._strip:
             message = message.strip()
@@ -104,8 +106,8 @@ class CommitMessageHeadStartsWithDetector(BasePatternBaseDetector):
         message = self._prepare_commit_message(commit)
 
         if self._case_sensitive:
-            return message.startwith(self._pattern)
-        return message.startwith(self._pattern.lower())
+            return message.startswith(self._pattern)
+        return message.startswith(self._pattern.lower())
 
 
 class CommitMessageContainsDetector(BasePatternBaseDetector):
@@ -139,9 +141,10 @@ def detector_factory(detector_name):
     :return: Detector class
     :rtype: auto_tag.detectors.BaseDetector
     """
-    detector_map = {detector.__class__: detector for detector in DETECTORS}
+    detector_map = {detector.__name__: detector for detector in DETECTORS}
 
     if detector_name not in detector_map:
         raise exception.DetectorNotFound(
             'Detector {} not found. Available detectors: {}'.format(
                 detector_name, detector_map.keys()))
+    return detector_map[detector_name]

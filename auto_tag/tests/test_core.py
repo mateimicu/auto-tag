@@ -208,7 +208,6 @@ def test_tag_message_has_heading(simple_repo):
     autotag.work()
 
     assert '2.0.0' in repo.tags
-    print(repo.tags['2.0.0'].tag.message)
     for message in messages:
         assert message.split('\n')[0].strip() in repo.tags['2.0.0'].tag.message
 

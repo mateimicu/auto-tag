@@ -34,6 +34,7 @@ def main():
     autotag = core.AutoTag(
         repo=args.repo, branch=args.branch,
         upstream_remotes=args.upstream_remote,
+        git_name=args.name, git_email=args.email,
         logger=logger
     )
     autotag.work()

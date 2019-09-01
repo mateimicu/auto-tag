@@ -22,4 +22,11 @@ def get_parser():
                         help='Logging level.',
                         choices=list(logging._nameToLevel.keys()))
 
+    parser.add_argument('--name', type=str, default=None,
+                        help=('User name used for creating git objects.'
+                              'If not specified the system one will be used.'))
+    parser.add_argument('--email', type=str, default=None,
+                        help=('Email name used for creating git objects.'
+                              'If not specified the system one will be used.'))
+
     return parser

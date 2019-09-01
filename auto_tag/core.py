@@ -7,19 +7,7 @@ import logging
 import semantic_version
 import git
 
-
-# Types of changes
-MAJOR = 100
-MINOR = 10
-PATCH = 1
-CHANGE_TYPES = {
-    MAJOR: 'MAJOR',
-    MINOR: 'MINOR',
-    PATCH: 'PATCH',
-}
-
-
-PREFIX_TO_ELIMINATE = ['v']
+from auto_tag import constants
 
 
 class GitCustomeEnvironment():
@@ -81,7 +69,7 @@ class AutoTag():
 
     def _clean_tag_name(self, tag_name):
         """Remove common mistakes when using semantic versioning."""
-        for prefix in PREFIX_TO_ELIMINATE:
+        for prefix in constants.PREFIX_TO_ELIMINATE:
             if tag_name.startswith(prefix):
                 clean_tag = tag_name[len(prefix):]
                 self._logger.debug(
@@ -113,10 +101,10 @@ class AutoTag():
         if tag is None:
             return semantic_version.Version('0.0.1')
 
-        if change_type == MAJOR:
+        if change_type == constants.MAJOR:
             return tag.next_major()
 
-        if change_type == MINOR:
+        if change_type == constants.MINOR:
             return tag.next_minor()
 
         return tag.next_patch()
@@ -192,18 +180,18 @@ class AutoTag():
 
         :return: Type of change (PATCH, MINOR, MAJOR). By default everything
                  is a PATCH
-        :rtype: int (constants)
+        :rtype: int (constant)
         """
-        change_type = PATCH
+        change_type = constants.PATCH
         for commit in commits:
             if commit.message.strip().startswith('feature('):
-                change_type = max(change_type, MINOR)
+                change_type = max(change_type, constants.MINOR)
 
             if 'BREAKING_CHANGE' in commit.message.upper():
-                change_type = max(change_type, MAJOR)
+                change_type = max(change_type, constants.MAJOR)
             self._logger.debug(
                 'Commit %s enforced %s change type', commit,
-                CHANGE_TYPES[change_type])
+                constants.CHANGE_TYPES[change_type])
         return change_type
 
     @staticmethod

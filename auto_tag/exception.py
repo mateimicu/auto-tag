@@ -11,5 +11,10 @@ class BaseAutoTagException(Exception):
 class DetectorValidationException(BaseAutoTagException):
     """Validation failed on a detector"""
 
+
 class DetectorNotFound(BaseAutoTagException):
+    """Validation failed on a detector"""
+
+
+class ConfigurationError(BaseAutoTagException):
     """Validation failed on a detector"""

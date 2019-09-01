@@ -1,0 +1,43 @@
+detectors:
+
+  detector_1:
+    type: CommitMessageHeadStartsWithDetector
+    produce_type_change: MINOR
+    params:
+      pattern: 'pattern-1'
+
+  detector_2:
+    type: CommitMessageHeadStartsWithDetector
+    produce_type_change: MINOR
+    params:
+      pattern: 'pattern-2'
+      case_sensitive: true
+
+  detector_3:
+    type: CommitMessageHeadStartsWithDetector
+    produce_type_change: MINOR
+    params:
+      pattern: 'pattern-3'
+      case_sensitive: true
+      strip: false
+
+  detector_4:
+    type: CommitMessageContainsDetector
+    produce_type_change: MINOR
+    params:
+      pattern: 'pattern-4'
+
+  detector_5:
+    type: CommitMessageContainsDetector
+    produce_type_change: MINOR
+    params:
+      pattern: 'pattern-5'
+      case_sensitive: true
+
+  detector_6:
+    type: CommitMessageContainsDetector
+    produce_type_change: MINOR
+    params:
+      pattern: 'pattern-6'
+      case_sensitive: false
+      strip: false

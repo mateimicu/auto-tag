@@ -64,6 +64,7 @@ def test_CommitMessageHeadStartsWithDetector_trigger(simple_repo):
 
 
 def test_CommitMessageHeadStartsWithDetector_not_trigger(simple_repo):
+    """Check to see if the detector avoids miss matches."""
     repo = git.Repo(simple_repo, odbt=git.GitDB)
     pattern = 'abcd'
     message = 'extra text' + pattern + ' extra text'

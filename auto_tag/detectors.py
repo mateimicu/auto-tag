@@ -16,20 +16,38 @@ from auto_tag import exception
 class BaseDetector():
     """Base detector class."""
 
-    def __init__(self, change_type, case_sensitive=True, strip=True, **kwargs):
+    def __init__(self, name, change_type, case_sensitive=True,
+                 strip=True, **kwargs):
         """Initialize the detector."
 
+        :param name: Name of the detector
         :param change_type: If this detector fires what type of change it will
                             create
         :param case_sensitive: If the detector is case sensitive
         :param strip: Strip the evaluated value before processing
         :param logger: If specified what logger to use
         """
+        self._name = name
         self._change_type = change_type
         self._case_sensitive = case_sensitive
         self._strip = strip
         self._logger = (
             kwargs.get('logger', None) or logging.getLogger(__name__))
+
+    @property
+    def name(self):
+        """Return name of the detector."""
+        return self._name
+
+    @property
+    def strip(self):
+        """Return strip value of the detector."""
+        return self._strip
+
+    @property
+    def case_sensitive(self):
+        """Return case_sensitive value of the detector."""
+        return self._case_sensitive
 
     @property
     def change_type(self):
@@ -72,6 +90,11 @@ class BasePatternBaseDetector(BaseDetector):
         self._pattern = kwargs.get('pattern', None)
         if isinstance(self._pattern, str) and not self._case_sensitive:
             self._pattern = self._pattern.lower()
+
+    @property
+    def pattern(self):
+        """Return pattern value of the detector."""
+        return self._pattern
 
     def validate_detector_params(self):
         """Check if all the parameters given to the detector make sens."""

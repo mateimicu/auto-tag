@@ -5,7 +5,7 @@ Automatically tags branches base on commit message
 import logging
 
 import semantic_version
-from git import Repo
+import git
 
 
 # Types of changes
@@ -186,12 +186,23 @@ class AutoTag():
                 self._logger.error(
                     'Can\'t find remote with name `%s`', remote_name)
 
+    @staticmethod
+    def _create_tag_message(commits, tag):
+        """Create a tag message that contains informations
+        from the commits. """
+
+        tag_message = 'Release {} \n\n'.format(str(tag))
+
+        for message in [c.message for c in commits]:
+            tag_message += '    * {}\n'.format(message.split('\n')[0].strip())
+        return tag_message
+
     def work(self):
         """Main entry point.
 
         :param args: Argument to work on
         """
-        repo = Repo(self._repo)
+        repo = git.Repo(self._repo, odbt=git.GitDB)
         self._logger.info('Start tagging %s', repo)
         last_tag = self.get_latest_tag(repo)
 
@@ -202,6 +213,8 @@ class AutoTag():
         next_tag = self.bump_tag(last_tag, type_of_change)
 
         self._logger.info('Bumping tag %s -> %s', last_tag, next_tag)
-        repo.create_tag(str(next_tag))
+        repo.create_tag(
+            str(next_tag),
+            message=self._create_tag_message(commits, next_tag))
 
         self.push_to_remotes(repo, next_tag)

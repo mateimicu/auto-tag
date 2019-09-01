@@ -29,14 +29,14 @@ def test_factory_detector_no_existing_detector():
 def test_CommitMessageHeadStartsWithDetector_validation_type():
     """Check the validation for the detector."""
     detector = detectors.CommitMessageHeadStartsWithDetector(
-        'MAJOR', pattern='test-pattern')
+        'name', 'MAJOR', pattern='test-pattern')
     assert detector.validate_detector_params() is None
 
 
 def test_CommitMessageHeadStartsWithDetector_invalid_type():
     """Check to see if the detectors validate the change_type."""
     detector = detectors.CommitMessageHeadStartsWithDetector(
-        'BAD_CHANGE_TYPE', pattern='test-pattern')
+        'name', 'BAD_CHANGE_TYPE', pattern='test-pattern')
     with pytest.raises(exception.DetectorValidationException):
         assert detector.validate_detector_params()
 
@@ -44,7 +44,7 @@ def test_CommitMessageHeadStartsWithDetector_invalid_type():
 def test_CommitMessageHeadStartsWithDetector_invalid_pattern():
     """Check to see if the detectors validate the pattern."""
     detector = detectors.CommitMessageHeadStartsWithDetector(
-        'BAD_CHANGE_TYPE', pattern=[])
+        'name', 'BAD_CHANGE_TYPE', pattern=[])
     with pytest.raises(exception.DetectorValidationException):
         assert detector.validate_detector_params()
 
@@ -59,7 +59,7 @@ def test_CommitMessageHeadStartsWithDetector_trigger(simple_repo):
     commit = repo.index.commit(message)
 
     detector = detectors.CommitMessageHeadStartsWithDetector(
-        'MAJOR', pattern=pattern)
+        'name', 'MAJOR', pattern=pattern)
     assert detector.evaluate(commit)
 
 
@@ -73,7 +73,7 @@ def test_CommitMessageHeadStartsWithDetector_not_trigger(simple_repo):
     commit = repo.index.commit(message)
 
     detector = detectors.CommitMessageHeadStartsWithDetector(
-        'MAJOR', pattern=pattern)
+        'name', 'MAJOR', pattern=pattern)
     assert not detector.evaluate(commit)
 
 
@@ -87,11 +87,11 @@ def test_CommitMessageHeadStartsWithDetector_trigger_strip(simple_repo):
     commit = repo.index.commit(message)
 
     detector = detectors.CommitMessageHeadStartsWithDetector(
-        'MAJOR', pattern=pattern)
+        'name', 'MAJOR', pattern=pattern)
     assert detector.evaluate(commit)
 
     detector_no_strip = detectors.CommitMessageHeadStartsWithDetector(
-        'MAJOR', pattern=pattern, strip=False)
+        'name', 'MAJOR', pattern=pattern, strip=False)
     assert not detector_no_strip.evaluate(commit)
 
 
@@ -105,15 +105,15 @@ def test_CommitMessageHeadStartsWithDetector_trigger_case(simple_repo):
     commit = repo.index.commit(message)
 
     detector = detectors.CommitMessageHeadStartsWithDetector(
-        'MAJOR', pattern=pattern)
+        'name', 'MAJOR', pattern=pattern)
     assert detector.evaluate(commit)
 
     detector_bad_pattern = detectors.CommitMessageHeadStartsWithDetector(
-        'MAJOR', pattern=pattern.lower())
+        'name', 'MAJOR', pattern=pattern.lower())
     assert not detector_bad_pattern.evaluate(commit)
 
     detector_insesitive = detectors.CommitMessageHeadStartsWithDetector(
-        'MAJOR', pattern=pattern.lower(), case_sensitive=False)
+        'name', 'MAJOR', pattern=pattern.lower(), case_sensitive=False)
     assert detector_insesitive.evaluate(commit)
 
 
@@ -127,5 +127,5 @@ def test_CommitMessageContainsDetector_trigger(simple_repo):
     commit = repo.index.commit(message)
 
     detector = detectors.CommitMessageContainsDetector(
-        'MAJOR', pattern=pattern)
+        'name', 'MAJOR', pattern=pattern)
     assert detector.evaluate(commit)

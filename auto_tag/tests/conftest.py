@@ -7,6 +7,8 @@ import os
 import git
 import pytest
 
+from auto_tag import detectors_config
+
 
 @pytest.fixture
 def simple_repo(tmpdir):
@@ -22,6 +24,13 @@ def simple_repo(tmpdir):
         bare_repo.index.commit(commit_text)
 
     return bare_repo_path
+
+
+@pytest.fixture
+def default_detectors():
+    """Return a simple repository with 3 basic commits and no tags."""
+    config = detectors_config.DetectorsConfig.from_default()
+    return config.detectors
 
 
 @pytest.fixture

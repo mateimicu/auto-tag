@@ -15,7 +15,7 @@ def test_detector_config():
         os.path.dirname(os.path.realpath(__file__)),
         'data', 'detectors_example.yaml')
 
-    config = detectors_config.DetectorsConfig(path_to_file)
+    config = detectors_config.DetectorsConfig.from_file(path_to_file)
     assert config.detectors
     assert len(config.detectors) == 6
 

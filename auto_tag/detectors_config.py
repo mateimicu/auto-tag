@@ -3,11 +3,13 @@
 Prepare Detectors based on a file config.
 """
 import logging
+import io
 import yaml
 
 
 from auto_tag import exception
 from auto_tag import detectors
+from auto_tag import constants
 
 # pylint:disable=too-few-public-methods
 
@@ -15,21 +17,32 @@ from auto_tag import detectors
 class DetectorsConfig():
     """Handles instantiation of detectors based on a config file."""
 
-    def __init__(self, file_path, logger=None):
+    def __init__(self, data, logger=None):
         """Initiate the config."""
-        self._file_path = file_path
+        self._data = data
         self._logger = logger or logging.getLogger(__name__)
         self._detectors = None
+
+    @classmethod
+    def from_file(cls, filepath, logger=None):
+        """Read config from a file."""
+        with open(filepath, 'r') as file_stream:
+            return cls(file_stream.read(), logger)
+
+    @classmethod
+    def from_default(cls, logger=None):
+        """Return a configuration of the default setting."""
+        return cls(constants.DEFAULT_CONFIG_DETECTORS, logger)
 
     def _parse_detectors(self):
         """Parse the file and instantiate detectors."""
         self._detectors = []
-        with open(self._file_path, 'r') as stream:
-            try:
-                data = yaml.safe_load(stream)
-            except yaml.YAMLError as exc:
-                raise exception.BaseAutoTagException(
-                    'Can\'t handle config {}'.format(exc))
+        stream = io.StringIO(self._data)
+        try:
+            data = yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            raise exception.BaseAutoTagException(
+                'Can\'t handle config {}'.format(exc))
 
         if 'detectors' not in data:
             raise exception.ConfigurationError("Can't find key detectors")

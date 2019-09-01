@@ -53,7 +53,7 @@ class GitCustomeEnvironment():
 class AutoTag():
     """Class  wrapper for auto-tag functionality."""
 
-    def __init__(self, repo, branch, upstream_remotes,
+    def __init__(self, repo, branch, upstream_remotes, detectors,
                  git_name=None, git_email=None, logger=None):
         """Initializa the AutoTag class.
 
@@ -62,6 +62,7 @@ class AutoTag():
         """
         self._logger = logger or logging.getLogger(__name__)
         self._repo = repo
+        self._detectors = detectors
         self._branch = branch
         self._upstream_remotes = upstream_remotes or []
         self._git_name = git_name
@@ -140,58 +141,13 @@ class AutoTag():
         return commits
 
     def get_change_type(self, commits):
-        """Based on the commit message decide the change type.
-        Change types can be PATCH, MINOR, MAJOR.
-
-        Everything by default is a PATCH
-
-        If the message stars with `fix` -> it remains a PATCH
-        If the message starts with `feat` -> it becomes a MINOR
-
-        If the message contains `BREAKING_CHANGE` -> it becomes a MAJOR
-
-            :Example:
-
-            ```
-            fix(msk): fix logging bug
-            ```
-            This is a PATCH
-
-            ```
-            feature(rds): add multi AZ support
-            ```
-            This is a MINOR
-
-            ```
-            fix(msk): fix logging bug
-            BREAKING_CHANGE: Introduce mandatory configuration
-            ```
-            This is a MAJOR
-
-            ```
-            feature(rds): add multi AZ support
-
-            BREAKING_CHANGE: Requires downtime
-            ```
-            This is a MAJOR
-
-        :param commits: List of commits
-        :type: list of git.Commit
-
-        :return: Type of change (PATCH, MINOR, MAJOR). By default everything
-                 is a PATCH
-        :rtype: int (constant)
-        """
+        """Evaluate all detectors on a commit and decide on the change type."""
         change_type = constants.PATCH
         for commit in commits:
-            if commit.message.strip().startswith('feature('):
-                change_type = max(change_type, constants.MINOR)
+            for detector in self._detectors:
+                if detector.evaluate(commit):
+                    change_type = max(change_type, detector.change_type)
 
-            if 'BREAKING_CHANGE' in commit.message.upper():
-                change_type = max(change_type, constants.MAJOR)
-            self._logger.debug(
-                'Commit %s enforced %s change type', commit,
-                constants.CHANGE_TYPES[change_type])
         return change_type
 
     @staticmethod
@@ -205,9 +161,11 @@ class AutoTag():
     def push_to_remotes(self, repo, tag):
         """Push a tag to the specified remotes."""
         if self._upstream_remotes:
-            self._logger.info('Start pushing to remotes.')
+            self._logger.info('Start pushing to remotes: %s.',
+                              self._upstream_remotes)
         else:
             self._logger.info('No push remote was specified')
+            return
         for remote_name in self._upstream_remotes:
             remote = self.get_remote(repo, remote_name)
             if remote:

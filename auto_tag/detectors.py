@@ -28,7 +28,7 @@ class BaseDetector():
         :param logger: If specified what logger to use
         """
         self._name = name
-        self._change_type = change_type
+        self._change_type_name = change_type
         self._case_sensitive = case_sensitive
         self._strip = strip
         self._logger = (
@@ -50,17 +50,22 @@ class BaseDetector():
         return self._case_sensitive
 
     @property
+    def change_type_name(self):
+        """Return the type of change this detector imposes."""
+        return self._change_type_name
+
+    @property
     def change_type(self):
         """Return the type of change this detector imposes."""
-        return self._change_type
+        return constants.CHANGE_TYPES_REVERSE[self._change_type_name]
 
     def validate_detector_params(self):
         """Check if all the parameters given to the detector make sens."""
-        if self._change_type not in constants.CHANGE_TYPES.values():
+        if self._change_type_name not in constants.CHANGE_TYPES.values():
             raise exception.DetectorValidationException(
                 ('Change type {} is not in not valid. Accepted'
                  ' change types are {}').format(
-                     self._change_type, constants.CHANGE_TYPES.keys()))
+                     self._change_type_name, constants.CHANGE_TYPES.keys()))
 
     @abc.abstractmethod
     def evaluate(self, commit):
@@ -105,14 +110,17 @@ class BasePatternBaseDetector(BaseDetector):
                  'it must be specified and of type string').format(
                      self._pattern))
 
+    def __prepare_text(self, text):
+        """Prepare a text according to the config."""
+        if not self._case_sensitive:
+            text = text.lower()
+        if self._strip:
+            text = text.strip()
+        return text
+
     def _prepare_commit_message(self, commit):
         """Get the prepared commit message according to the config."""
-        message = commit.message
-        if not self._case_sensitive:
-            message = message.lower()
-        if self._strip:
-            message = message.strip()
-        return message
+        return self.__prepare_text(commit.message)
 
 
 class CommitMessageHeadStartsWithDetector(BasePatternBaseDetector):

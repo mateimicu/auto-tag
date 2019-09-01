@@ -14,7 +14,7 @@ def get_parser():
                         help='On what branch to work on. Default `master`')
     parser.add_argument('-r', '--repo', type=str, default='.',
                         help='Path to repository. Default `.`')
-    parser.add_argument('-u', '--upstream_remote', type=str, nargs='+',
+    parser.add_argument('-u', '--upstream_remote', type=str, nargs='*',
                         help=('To what remote to push to.'
                               'Can be specified multiple time.'))
     #  pylint:disable=no-member, protected-access
@@ -28,5 +28,8 @@ def get_parser():
     parser.add_argument('--email', type=str, default=None,
                         help=('Email name used for creating git objects.'
                               'If not specified the system one will be used.'))
+
+    parser.add_argument('-c', '--config', type=str, default=None,
+                        help='Path to detectors configuration.')
 
     return parser

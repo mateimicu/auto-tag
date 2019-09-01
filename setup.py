@@ -51,5 +51,7 @@ setup(
     install_reqs=[
         'gitpython',
         'semantic_version',
+        'confuse',
+        'six',
     ]
 )

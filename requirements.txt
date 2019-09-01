@@ -1,2 +1,4 @@
 gitpython
 semantic_version
+confuse
+six

@@ -174,7 +174,7 @@ class AutoTag():
         self._logger.info('Bumping tag %s -> %s', last_tag, next_tag)
 
         with git_custom_env.GitCustomeEnvironment(
-            repo.working_dir, self._git_name, self._git_email):
+                repo.working_dir, self._git_name, self._git_email):
             repo.create_tag(
                 str(next_tag),
                 message=self._create_tag_message(commits, next_tag))

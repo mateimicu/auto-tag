@@ -85,18 +85,12 @@ class BasePatternBaseDetector(BaseDetector):
         super(BasePatternBaseDetector, self).__init__(
             *args, **kwargs)
 
-        self._case_sensitive = kwargs.get('case_sensitive', True)
         self._pattern = kwargs.get('pattern', None)
 
     @property
     def pattern(self):
         """Return pattern value of the detector."""
         return self._pattern
-
-    @property
-    def case_sensitive(self):
-        """Return case_sensitive value of the detector."""
-        return self._case_sensitive
 
     def validate_detector_params(self):
         """Check if all the parameters given to the detector make sens."""
@@ -106,6 +100,39 @@ class BasePatternBaseDetector(BaseDetector):
                 ('Patter: {} is not valid.'
                  'it must be specified and of type string').format(
                      self._pattern))
+
+
+class BasePatternSimpleComparationDetector(BasePatternBaseDetector):
+    """Check if the commit message respects a pattern"""
+
+    def __init__(self, *args, **kwargs):
+        """Initialize the detector.
+
+        :param pattern: The pattern to match if it starts with
+
+        :param *args: Check with the base class
+        :param **kwargs: Check with the base class
+        """
+        super(BasePatternSimpleComparationDetector, self).__init__(
+            *args, **kwargs)
+
+        self._case_sensitive = kwargs.get('case_sensitive', True)
+
+    @property
+    def case_sensitive(self):
+        """Return case_sensitive value of the detector."""
+        return self._case_sensitive
+
+    def validate_detector_params(self):
+        """Check if all the parameters given to the detector make sens."""
+        super(
+            BasePatternSimpleComparationDetector,
+            self).validate_detector_params()
+        if not isinstance(self._case_sensitive, bool):
+            raise exception.DetectorValidationException(
+                ('case_sensitive: {} is not valid.'
+                 'it must be of type bool').format(
+                     self._case_sensitive))
 
     def __prepare_text(self, text):
         """Prepare a text according to the config."""
@@ -120,7 +147,8 @@ class BasePatternBaseDetector(BaseDetector):
         return self.__prepare_text(commit.message)
 
 
-class CommitMessageHeadStartsWithDetector(BasePatternBaseDetector):
+class CommitMessageHeadStartsWithDetector(
+        BasePatternSimpleComparationDetector):
     """Check if the head of the commit message has a particular pattern."""
 
     def evaluate(self, commit):
@@ -138,7 +166,7 @@ class CommitMessageHeadStartsWithDetector(BasePatternBaseDetector):
         return message.startswith(self._pattern.lower())
 
 
-class CommitMessageContainsDetector(BasePatternBaseDetector):
+class CommitMessageContainsDetector(BasePatternSimpleComparationDetector):
     """Check if the message of the commit contains a particular pattern."""
 
     def evaluate(self, commit):
@@ -190,9 +218,7 @@ class CommitMessageMatchesRegexDetector(BasePatternBaseDetector):
         :returns: True if this detector got triggered
         :rtype: book
         """
-        message = self._prepare_commit_message(commit)
-
-        return bool(self._compiled_regex.search(message))
+        return bool(self._compiled_regex.search(commit.message))
 
 
 DETECTORS = [

@@ -7,65 +7,14 @@ import logging
 import semantic_version
 import git
 
-
-# Types of changes
-MAJOR = 100
-MINOR = 10
-PATCH = 1
-CHANGE_TYPES = {
-    MAJOR: 'MAJOR',
-    MINOR: 'MINOR',
-    PATCH: 'PATCH',
-}
-
-
-PREFIX_TO_ELIMINATE = ['v']
-
-
-class GitCustomeEnvironment():
-    """Custom Git Configuration context manager."""
-
-    # pylint: disable=no-member
-    def __init__(self, repo_path, name, email):
-        """Initialize the context manager."""
-        self._repo = git.Repo(repo_path, odbt=git.GitDB)
-        self._name = name
-        self._email = email
-        self._old_name = None
-        self._old_email = None
-        with self._repo.config_writer() as confi_w:
-            if confi_w.has_option('user', 'name'):
-                self._old_name = confi_w.get_value('user', 'name')
-
-            if confi_w.has_option('user', 'email'):
-                self._old_email = confi_w.get_value('user', 'email')
-
-    def __enter__(self):
-        with self._repo.config_writer() as config_writer:
-            if self._name is not None:
-                config_writer.set_value('user', 'name', self._name)
-            if self._email is not None:
-                config_writer.set_value('user', 'email', self._email)
-
-    def __exit__(self, _type, value, traceback):
-        with self._repo.config_writer() as conf_w:
-            if not conf_w.has_section('user'):
-                return
-            if self._old_name is None:
-                conf_w.remove_option('user', 'name')
-            else:
-                conf_w.set_value('user', 'name', self._old_name)
-
-            if self._old_email is None:
-                conf_w.remove_option('user', 'email')
-            else:
-                conf_w.set_value('user', 'email', self._old_email)
+from auto_tag import constants
+from auto_tag import git_custom_env
 
 
 class AutoTag():
     """Class  wrapper for auto-tag functionality."""
 
-    def __init__(self, repo, branch, upstream_remotes,
+    def __init__(self, repo, branch, upstream_remotes, detectors,
                  git_name=None, git_email=None, logger=None):
         """Initializa the AutoTag class.
 
@@ -74,6 +23,7 @@ class AutoTag():
         """
         self._logger = logger or logging.getLogger(__name__)
         self._repo = repo
+        self._detectors = detectors
         self._branch = branch
         self._upstream_remotes = upstream_remotes or []
         self._git_name = git_name
@@ -81,7 +31,7 @@ class AutoTag():
 
     def _clean_tag_name(self, tag_name):
         """Remove common mistakes when using semantic versioning."""
-        for prefix in PREFIX_TO_ELIMINATE:
+        for prefix in constants.PREFIX_TO_ELIMINATE:
             if tag_name.startswith(prefix):
                 clean_tag = tag_name[len(prefix):]
                 self._logger.debug(
@@ -113,10 +63,10 @@ class AutoTag():
         if tag is None:
             return semantic_version.Version('0.0.1')
 
-        if change_type == MAJOR:
+        if change_type == constants.MAJOR:
             return tag.next_major()
 
-        if change_type == MINOR:
+        if change_type == constants.MINOR:
             return tag.next_minor()
 
         return tag.next_patch()
@@ -152,58 +102,13 @@ class AutoTag():
         return commits
 
     def get_change_type(self, commits):
-        """Based on the commit message decide the change type.
-        Change types can be PATCH, MINOR, MAJOR.
-
-        Everything by default is a PATCH
-
-        If the message stars with `fix` -> it remains a PATCH
-        If the message starts with `feat` -> it becomes a MINOR
-
-        If the message contains `BREAKING_CHANGE` -> it becomes a MAJOR
-
-            :Example:
-
-            ```
-            fix(msk): fix logging bug
-            ```
-            This is a PATCH
-
-            ```
-            feature(rds): add multi AZ support
-            ```
-            This is a MINOR
-
-            ```
-            fix(msk): fix logging bug
-            BREAKING_CHANGE: Introduce mandatory configuration
-            ```
-            This is a MAJOR
-
-            ```
-            feature(rds): add multi AZ support
-
-            BREAKING_CHANGE: Requires downtime
-            ```
-            This is a MAJOR
-
-        :param commits: List of commits
-        :type: list of git.Commit
-
-        :return: Type of change (PATCH, MINOR, MAJOR). By default everything
-                 is a PATCH
-        :rtype: int (constants)
-        """
-        change_type = PATCH
+        """Evaluate all detectors on a commit and decide on the change type."""
+        change_type = constants.PATCH
         for commit in commits:
-            if commit.message.strip().startswith('feature('):
-                change_type = max(change_type, MINOR)
+            for detector in self._detectors:
+                if detector.evaluate(commit):
+                    change_type = max(change_type, detector.change_type)
 
-            if 'BREAKING_CHANGE' in commit.message.upper():
-                change_type = max(change_type, MAJOR)
-            self._logger.debug(
-                'Commit %s enforced %s change type', commit,
-                CHANGE_TYPES[change_type])
         return change_type
 
     @staticmethod
@@ -217,9 +122,11 @@ class AutoTag():
     def push_to_remotes(self, repo, tag):
         """Push a tag to the specified remotes."""
         if self._upstream_remotes:
-            self._logger.info('Start pushing to remotes.')
+            self._logger.info('Start pushing to remotes: %s.',
+                              self._upstream_remotes)
         else:
             self._logger.info('No push remote was specified')
+            return
         for remote_name in self._upstream_remotes:
             remote = self.get_remote(repo, remote_name)
             if remote:
@@ -266,8 +173,8 @@ class AutoTag():
 
         self._logger.info('Bumping tag %s -> %s', last_tag, next_tag)
 
-        with GitCustomeEnvironment(repo.working_dir, self._git_name,
-                                   self._git_email):
+        with git_custom_env.GitCustomeEnvironment(
+                repo.working_dir, self._git_name, self._git_email):
             repo.create_tag(
                 str(next_tag),
                 message=self._create_tag_message(commits, next_tag))

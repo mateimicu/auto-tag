@@ -1,0 +1,15 @@
+detectors:
+  fist_detector:
+    type: detector_name_first
+    produce_type_change: MINOR
+    params:
+      param1: 10
+      param2: 10
+      param3: 10
+  second_detector:
+    type: detector_name_second
+    produce_type_change: MAJOR
+    params:
+      param1: 10
+      param2: 10
+      param3: 10

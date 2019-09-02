@@ -215,3 +215,6 @@ The following options will add a temporary config to this repository(local confi
                         specified the system one will be used.
 ```
 If another user interacts with git while this process is taking place it will use the temporary config, but we assume we are run in a CI pipeline and this is the only process interacting with git.
+
+---
+This project is licensed under the terms of the MIT license.

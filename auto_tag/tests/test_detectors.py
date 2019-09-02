@@ -11,6 +11,11 @@ from auto_tag import detectors
 from auto_tag import exception
 # pylint:disable=invalid-name
 
+TEST_DATA_REGEX_DETECTOR = [
+    ('[a-zA-Z]*[1-9]', 'this message has interesting pattern123', True),
+    ('[a-zA-Z]*[1-9]', 'this message has interesting pattern', False),
+]
+
 
 def test_factory_detector_happy_flow():
     """Test to see if the factory returns what we expect."""
@@ -129,3 +134,18 @@ def test_CommitMessageContainsDetector_trigger(simple_repo):
     detector = detectors.CommitMessageContainsDetector(
         'name', 'MAJOR', pattern=pattern)
     assert detector.evaluate(commit)
+
+
+@pytest.mark.parametrize('pattern, message, expected',
+                         TEST_DATA_REGEX_DETECTOR)
+def test_CommitMessageMatchesRegexDetector_trigger(
+        pattern, message, expected, simple_repo):
+    """Check the happy flow of the trigger."""
+    repo = git.Repo(simple_repo, odbt=git.GitDB)
+    file_path = os.path.join(repo.working_dir, 'dummy_file')
+    open(file_path, 'w+').close()
+    commit = repo.index.commit(message)
+
+    detector = detectors.CommitMessageMatchesRegexDetector(
+        'name', 'MAJOR', pattern=pattern)
+    assert detector.evaluate(commit) == expected

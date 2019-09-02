@@ -6,6 +6,7 @@ Parses a configuration with what type of change do you want to produce.
 """
 import abc
 import logging
+import re
 import six
 
 from auto_tag import constants
@@ -16,20 +17,17 @@ from auto_tag import exception
 class BaseDetector():
     """Base detector class."""
 
-    def __init__(self, name, change_type, case_sensitive=True,
-                 strip=True, **kwargs):
+    def __init__(self, name, change_type, strip=True, **kwargs):
         """Initialize the detector."
 
         :param name: Name of the detector
         :param change_type: If this detector fires what type of change it will
                             create
-        :param case_sensitive: If the detector is case sensitive
         :param strip: Strip the evaluated value before processing
         :param logger: If specified what logger to use
         """
         self._name = name
         self._change_type_name = change_type
-        self._case_sensitive = case_sensitive
         self._strip = strip
         self._logger = (
             kwargs.get('logger', None) or logging.getLogger(__name__))
@@ -43,11 +41,6 @@ class BaseDetector():
     def strip(self):
         """Return strip value of the detector."""
         return self._strip
-
-    @property
-    def case_sensitive(self):
-        """Return case_sensitive value of the detector."""
-        return self._case_sensitive
 
     @property
     def change_type_name(self):
@@ -92,14 +85,18 @@ class BasePatternBaseDetector(BaseDetector):
         super(BasePatternBaseDetector, self).__init__(
             *args, **kwargs)
 
+        self._case_sensitive = kwargs.get('case_sensitive', True)
         self._pattern = kwargs.get('pattern', None)
-        if isinstance(self._pattern, str) and not self._case_sensitive:
-            self._pattern = self._pattern.lower()
 
     @property
     def pattern(self):
         """Return pattern value of the detector."""
         return self._pattern
+
+    @property
+    def case_sensitive(self):
+        """Return case_sensitive value of the detector."""
+        return self._case_sensitive
 
     def validate_detector_params(self):
         """Check if all the parameters given to the detector make sens."""
@@ -159,9 +156,49 @@ class CommitMessageContainsDetector(BasePatternBaseDetector):
         return self._pattern.lower() in message
 
 
+class CommitMessageMatchesRegexDetector(BasePatternBaseDetector):
+    """Check if the message of the commit matches regex pattern."""
+
+    def __init__(self, *args, **kwargs):
+        """Initialize the detector.
+
+        :param pattern: The pattern to match if it starts with
+
+        :param *args: Check with the base class
+        :param **kwargs: Check with the base class
+        """
+        super(CommitMessageMatchesRegexDetector, self).__init__(
+            *args, **kwargs)
+
+        self._compiled_regex = re.compile(self._pattern)
+
+    def validate_detector_params(self):
+        """Check if all the parameters given to the detector make sens."""
+        super(
+            CommitMessageMatchesRegexDetector, self).validate_detector_params()
+
+        if self. _compiled_regex is None:
+            raise exception.DetectorValidationException(
+                ('Patter: {} is not valid regex.'
+                 'it must be specified and compliant').format(self._pattern))
+
+    def evaluate(self, commit):
+        """Check if the commit message matches a regex pattern
+
+        :param commit: The commit to evaluate
+
+        :returns: True if this detector got triggered
+        :rtype: book
+        """
+        message = self._prepare_commit_message(commit)
+
+        return bool(self._compiled_regex.search(message))
+
+
 DETECTORS = [
     CommitMessageHeadStartsWithDetector,
-    CommitMessageContainsDetector
+    CommitMessageContainsDetector,
+    CommitMessageMatchesRegexDetector,
 ]
 
 

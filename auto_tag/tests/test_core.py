@@ -263,7 +263,8 @@ def test_tag_message_user_exists_and_specified(simple_repo, default_detectors):
     assert TEST_EMAIL_2 == repo.tags['0.0.1'].tag.tagger.email
 
 
-def test_tag_message_user_exists_and_only_email_specified(simple_repo, default_detectors):
+def test_tag_message_user_exists_and_only_email_specified(
+        simple_repo, default_detectors):
     """Test to see if the tag message has all the commit headings."""
     repo = git.Repo(simple_repo, odbt=git.GitDB)
 
@@ -283,7 +284,8 @@ def test_tag_message_user_exists_and_only_email_specified(simple_repo, default_d
     assert TEST_EMAIL_2 == repo.tags['0.0.1'].tag.tagger.email
 
 
-def test_tag_message_user_does_not_exists_and_specified(simple_repo, default_detectors):
+def test_tag_message_user_does_not_exists_and_specified(
+        simple_repo, default_detectors):
     """Test to see if the tag message has all the commit headings."""
     repo = git.Repo(simple_repo, odbt=git.GitDB)
 
@@ -300,7 +302,8 @@ def test_tag_message_user_does_not_exists_and_specified(simple_repo, default_det
     assert TEST_EMAIL_2 == repo.tags['0.0.1'].tag.tagger.email
 
 
-def test_tag_message_user_exists_and_specify_make_sure_clean_env(simple_repo, default_detectors):
+def test_tag_message_user_exists_and_specify_make_sure_clean_env(
+        simple_repo, default_detectors):
     """Test to see if the tag message has all the commit headings."""
     repo = git.Repo(simple_repo, odbt=git.GitDB)
 

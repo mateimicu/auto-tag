@@ -168,7 +168,7 @@ class AutoTag():
         tag = repo.tags[str(last_tag_name)]
         git_branch = None
         for branch in repo.branches:
-            if branch.name == branch_name:
+            if branch_name.split('/')[-1] in branch.name:
                 git_branch = branch
                 break
 

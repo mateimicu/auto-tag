@@ -32,4 +32,5 @@ jobs:
     - name: Check coverage
       run: |
         pytest --cov=auto_tag
+        codecov
 

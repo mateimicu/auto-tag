@@ -32,4 +32,12 @@ def get_parser():
     parser.add_argument('-c', '--config', type=str, default=None,
                         help='Path to detectors configuration.')
 
+    parser.add_argument('--skip-tag-if-one-already-present',
+                        action='store_true',
+                        help=('If a tag is already present on the latest '
+                              'commit don\'t apply a new tag'))
+
+    parser.add_argument('--append-v-to-tag', action='store_true',
+                        help='Append a v to the tag (ex v1.0.5)')
+
     return parser

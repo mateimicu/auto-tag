@@ -18,3 +18,7 @@ class DetectorNotFound(BaseAutoTagException):
 
 class ConfigurationError(BaseAutoTagException):
     """Validation failed on a detector"""
+
+
+class CantFindBranch(BaseAutoTagException):
+    """Can't find a specific branch"""

@@ -68,6 +68,48 @@ def test_simple_flow_existing_tag(
 
 
 @pytest.mark.parametrize('existing_tag, next_tag',
+                         TEST_DATA_SIMPLE_TAG_PATCH_BUMP)
+def test_simple_flow_existing_tag_on_last_commit(
+        existing_tag, next_tag, simple_repo,  default_detectors):
+    """Test a simple flow locally."""
+    repo = git.Repo(simple_repo, odbt=git.GitDB)
+    repo.create_tag(
+        existing_tag,
+        ref=list(repo.iter_commits())[0])
+
+    entrypoint.main(
+        ['-r', simple_repo,
+         '-b', 'master',
+         '--name', TEST_NAME,
+         '--email', TEST_EMAIL,
+         '--skip-tag-if-one-already-present'])
+
+    assert next_tag not in repo.tags
+
+
+@pytest.mark.parametrize('existing_tag, next_tag',
+                         TEST_DATA_SIMPLE_TAG_PATCH_BUMP)
+def test_simple_flow_existing_tag_append_v(
+        existing_tag, next_tag, simple_repo,  default_detectors):
+    """Test a simple flow locally."""
+
+    repo = git.Repo(simple_repo, odbt=git.GitDB)
+    repo.create_tag(
+        existing_tag,
+        ref=list(repo.iter_commits())[-1])
+
+    entrypoint.main(
+        ['-r', simple_repo,
+         '-b', 'master',
+         '--name', TEST_NAME,
+         '--email', TEST_EMAIL,
+         '--append-v-to-tag']
+    )
+
+    assert 'v{}'.format(next_tag) in repo.tags
+
+
+@pytest.mark.parametrize('existing_tag, next_tag',
                          TEST_DATA_SIMPLE_TAG_PATCH_MINOR)
 def test_simple_flow_existing_tag_minor_bump(
         existing_tag, next_tag, simple_repo_minor_commit):

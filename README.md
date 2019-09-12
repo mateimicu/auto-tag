@@ -1,8 +1,16 @@
 # Auto-Tag
+[![Updates](https://pyup.io/repos/github/mateimicu/auto-tag/shield.svg)](https://pyup.io/repos/github/mateimicu/auto-tag/)
+[![Python 3](https://pyup.io/repos/github/mateimicu/auto-tag/python-3-shield.svg)](https://pyup.io/repos/github/mateimicu/auto-tag/)
+![PyPI - License](https://img.shields.io/pypi/l/auto-tag)
+![PyPI](https://img.shields.io/pypi/v/auto-tag)
+![PyPI - Implementation](https://img.shields.io/pypi/implementation/auto-tag)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/auto-tag)
+
 Automatically tag a branch with the following SemVersion tag.
 
 This is useful if you want to automatically tag something merged on master, for example microservices.
 If there is a trigger based on tags then this can be used to apply the tags.
+
 
 # TOC
 
@@ -21,6 +29,7 @@ usage: auto-tag [-h] [-b BRANCH] [-r REPO]
                 [-u [UPSTREAM_REMOTE [UPSTREAM_REMOTE ...]]]
                 [-l {CRITICAL,FATAL,ERROR,WARN,WARNING,INFO,DEBUG,NOTSET}]
                 [--name NAME] [--email EMAIL] [-c CONFIG]
+                [--skip-tag-if-one-already-present] [--append-v-to-tags]
 
 Tag branch based on commit messages
 
@@ -40,6 +49,10 @@ optional arguments:
                         specified the system one will be used.
   -c CONFIG, --config CONFIG
                         Path to detectors configuration.
+  --skip-tag-if-one-already-present
+                        If a tag is already present on the latest commit don't
+                        apply a new tag
+  --append-v-to-tags    Append a v to the tag (ex v1.0.5)
 ```
 
 # How it Works

@@ -182,13 +182,13 @@ class AutoTag():
             repo, self._branch, last_tag)
         type_of_change = self.get_change_type(commits)
         next_tag = self.bump_tag(last_tag, type_of_change)
+        tag = 'v{}'.format(next_tag) if self._append_v else str(next_tag)
 
         self._logger.info('Bumping tag %s -> %s', last_tag, next_tag)
 
         with git_custom_env.GitCustomeEnvironment(repo.working_dir,
                                                   self._git_name,
                                                   self._git_email):
-            tag = 'v{}'.format(next_tag) if self._append_v else str(next_tag)
             tag_on_last_commit = self._is_last_commit_already_tagged(
                 repo, last_tag, self._branch)
 
@@ -201,4 +201,4 @@ class AutoTag():
                     str(tag),
                     message=self._create_tag_message(commits, next_tag))
 
-        self.push_to_remotes(repo, next_tag)
+        self.push_to_remotes(repo, tag)

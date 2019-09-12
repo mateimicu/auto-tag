@@ -1,16 +1,16 @@
 # Auto-Tag
 [![Updates](https://pyup.io/repos/github/mateimicu/auto-tag/shield.svg)](https://pyup.io/repos/github/mateimicu/auto-tag/)
 [![Python 3](https://pyup.io/repos/github/mateimicu/auto-tag/python-3-shield.svg)](https://pyup.io/repos/github/mateimicu/auto-tag/)
-![PyPI - License](https://img.shields.io/pypi/l/auto-tag)
 ![PyPI](https://img.shields.io/pypi/v/auto-tag)
 ![PyPI - Implementation](https://img.shields.io/pypi/implementation/auto-tag)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/auto-tag)
 [![codecov](https://codecov.io/gh/mateimicu/auto-tag/branch/master/graph/badge.svg)](https://codecov.io/gh/mateimicu/auto-tag)
+![PyPI - License](https://img.shields.io/pypi/l/auto-tag)
 
 
 Automatically tag a branch with the following SemVersion tag.
 
-This is useful if you want to automatically tag something merged on master, for example microservices.
+This is useful if you want to automatically tag something merged on the master, for example, microservices.
 If there is a trigger based on tags then this can be used to apply the tags.
 
 
@@ -26,6 +26,11 @@ If there is a trigger based on tags then this can be used to apply the tags.
 
 ```bash
 ~ $ pip install auto-tag
+```
+
+To see if it works, you can try
+
+```bash
 ~ $ auto-tag  -h
 usage: auto-tag [-h] [-b BRANCH] [-r REPO]
                 [-u [UPSTREAM_REMOTE [UPSTREAM_REMOTE ...]]]
@@ -60,11 +65,11 @@ optional arguments:
 # How it Works
 
 The flow is as follows:
-- figure our repository based on argument
+- figure our repository based on the argument
 - load detectors from file if specified (`-c` option), if none specified load default ones (see [Detectors](#detectors))
 - check for the last tag 
 - look at all commits done after that tag on a specific branch (or from the start of the repository if no tag is found)
-- apply the detector (see [Detectors](#detectors)) on each commit and save the hies change detected (PATH, MINOR, MAJOR)
+- apply the detector (see [Detectors](#detectors)) on each commit and save the highest change detected (PATH, MINOR, MAJOR)
 - bump the last tag with the approbate change  and apply it using the default git author in the system or a specific one (see [Git Author](#git-author))
 - if an upstream was specified push the tag to that upstream
 
@@ -196,7 +201,7 @@ detectors:
 Here is the default configuration for detectors if none is specified.
 We can see we have two detectors `check_for_feature_heading` and `check_for_breaking_change`, with a type, what change they will trigger and specific parameters for each one.
 This configuration will do the following:
-- if the commit message  starts with `feature(` a MINOR change will be trigger
+- if the commit message  starts with `feature(` a MINOR change will BE triggered
 - if the commit has `BREAKIN_CHANGE` in the message a MAJOR change will be triggered
 The bump on the tag will be based on the higher priority found.
 
@@ -221,7 +226,7 @@ Currently we support the following triggers:
 The regex detector is the most powerful one.
 
 # Git Author
-When creating and  tag we need to specify an git author, if a global one is not set (or if we want to make this one with a specific user), we have the option to specify one.
+When creating and tag we need to specify a git author, if a global one is not set (or if we want to make this one with a specific user), we have the option to specify one.
 The following options will add a temporary config to this repository(local config). After the tag was created it will restore the existing config (if any was present)
 ```
   --name NAME           User name used for creating git objects.If not
@@ -233,3 +238,4 @@ If another user interacts with git while this process is taking place it will us
 
 ---
 This project is licensed under the terms of the MIT license.
+

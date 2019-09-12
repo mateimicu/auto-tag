@@ -30,6 +30,8 @@ jobs:
       run: |
         pytest auto_tag
     - name: Check coverage
+      env:
+        CODECOV_TOKEN : ${{ secrets.CODECOV_TOKEN }}
       run: |
         pytest --cov=auto_tag
         codecov

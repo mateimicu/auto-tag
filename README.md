@@ -5,6 +5,8 @@
 ![PyPI](https://img.shields.io/pypi/v/auto-tag)
 ![PyPI - Implementation](https://img.shields.io/pypi/implementation/auto-tag)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/auto-tag)
+[![codecov](https://codecov.io/gh/mateimicu/auto-tag/branch/master/graph/badge.svg)](https://codecov.io/gh/mateimicu/auto-tag)
+
 
 Automatically tag a branch with the following SemVersion tag.
 

@@ -1,4 +1,4 @@
-gitpython
+gitpython==3.0.2
 semantic_version
 confuse
 six

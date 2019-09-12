@@ -1,4 +1,4 @@
-pylint
-pytest
-pytest-cov
-pytest-parallel
+pylint==2.3.1
+pytest==5.1.2
+pytest-cov==2.7.1
+pytest-parallel==0.0.9

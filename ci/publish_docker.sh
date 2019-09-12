@@ -3,5 +3,5 @@ set -x
 
 VERSION="$(cat setup.py | grep "version=" | cut -d= -f2 | tr -d "'" | tr -d ',')"
 IMG_NAME="matei10/auto-tag:$VERSION"
-docker build --build-arg MODULE_VERSION="$VERSION" -t "$IMG_NAME" .
+docker build --build-arg "MODULE_VERSION=$VERSION" -t "$IMG_NAME" .
 docker push "$IMG_NAME"

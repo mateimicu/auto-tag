@@ -41,6 +41,8 @@ def main(cli_args):
         upstream_remotes=args.upstream_remote,
         detectors=config.detectors,
         git_name=args.name, git_email=args.email,
+        append_v=args.append_v_to_tag,
+        skip_if_exists=args.skip_tag_if_one_already_present,
         logger=logger
     )
     autotag.work()

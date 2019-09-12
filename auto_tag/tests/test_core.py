@@ -72,6 +72,52 @@ def test_simple_flow_existing_tag(
 
 
 @pytest.mark.parametrize('existing_tag, next_tag',
+                         TEST_DATA_SIMPLE_TAG_PATCH_BUMP)
+def test_simple_flow_existing_tag_on_last_commit(
+        existing_tag, next_tag, simple_repo,  default_detectors):
+    """Test a simple flow locally."""
+    repo = git.Repo(simple_repo, odbt=git.GitDB)
+    repo.create_tag(
+        existing_tag,
+        ref=list(repo.iter_commits())[0])
+
+    autotag = core.AutoTag(
+        repo=simple_repo,
+        branch='master',
+        upstream_remotes=None,
+        detectors=default_detectors,
+        git_name=TEST_NAME,
+        git_email=TEST_EMAIL,
+        skip_if_exists=True)
+
+    autotag.work()
+    assert next_tag not in repo.tags
+
+
+@pytest.mark.parametrize('existing_tag, next_tag',
+                         TEST_DATA_SIMPLE_TAG_PATCH_BUMP)
+def test_simple_flow_existing_tag_append_v(
+        existing_tag, next_tag, simple_repo,  default_detectors):
+    """Test a simple flow locally."""
+    repo = git.Repo(simple_repo, odbt=git.GitDB)
+    repo.create_tag(
+        existing_tag,
+        ref=list(repo.iter_commits())[-1])
+
+    autotag = core.AutoTag(
+        repo=simple_repo,
+        branch='master',
+        upstream_remotes=None,
+        detectors=default_detectors,
+        git_name=TEST_NAME,
+        git_email=TEST_EMAIL,
+        append_v=True)
+
+    autotag.work()
+    assert 'v{}'.format(next_tag) in repo.tags
+
+
+@pytest.mark.parametrize('existing_tag, next_tag',
                          TEST_DATA_SIMPLE_TAG_PATCH_MINOR)
 def test_simple_flow_existing_tag_minor_bump(
         existing_tag, next_tag, simple_repo_minor_commit, default_detectors):
@@ -221,7 +267,8 @@ def test_tag_message_has_heading(simple_repo, default_detectors):
         assert message.split('\n')[0].strip() in repo.tags['2.0.0'].tag.message
 
 
-def test_tag_message_user_exists_and_not_specified(simple_repo, default_detectors):
+def test_tag_message_user_exists_and_not_specified(
+        simple_repo, default_detectors):
     """Test to see if the tag message has all the commit headings."""
     repo = git.Repo(simple_repo, odbt=git.GitDB)
 

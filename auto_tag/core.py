@@ -9,7 +9,6 @@ import git
 
 from auto_tag import constants
 from auto_tag import git_custom_env
-from auto_tag import exception
 
 
 class AutoTag():
@@ -161,22 +160,13 @@ class AutoTag():
         return env_vars
 
     @staticmethod
-    def __is_last_commit_already_tagged(repo, last_tag_name, branch_name):
+    def _is_last_commit_already_tagged(repo, last_tag_name, branch_name):
         """Check if the last_tag is also applied on the latest commit."""
         if last_tag_name is None:
             return False
         tag = repo.tags[str(last_tag_name)]
-        git_branch = None
-        for branch in repo.branches:
-            if branch_name.split('/')[-1] in branch.name:
-                git_branch = branch
-                break
-
-        if git_branch is None:
-            raise exception.CantFindBranch(
-                'Can\'t find branch {}'.format(branch_name))
-
-        return tag.commit == git_branch.commit
+        commit = list(repo.iter_commits(rev=branch_name))[0]
+        return tag.commit == commit
 
     def work(self):
         """Main entry point.
@@ -195,12 +185,14 @@ class AutoTag():
 
         self._logger.info('Bumping tag %s -> %s', last_tag, next_tag)
 
-        with git_custom_env.GitCustomeEnvironment(
-                repo.working_dir, self._git_name, self._git_email):
+        with git_custom_env.GitCustomeEnvironment(repo.working_dir,
+                                                  self._git_name,
+                                                  self._git_email):
             tag = 'v{}'.format(next_tag) if self._append_v else str(next_tag)
-            tag_exists_on_last_commit = self.__is_last_commit_already_tagged(
+            tag_on_last_commit = self._is_last_commit_already_tagged(
                 repo, last_tag, self._branch)
-            if self._skip_if_exists and tag_exists_on_last_commit:
+
+            if self._skip_if_exists and tag_on_last_commit:
                 self._logger.info(
                     ('The tag is already tagged, following your CLI option'
                      ' we will skip tagging.'))

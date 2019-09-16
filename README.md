@@ -6,6 +6,7 @@
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/auto-tag)
 [![codecov](https://codecov.io/gh/mateimicu/auto-tag/branch/master/graph/badge.svg)](https://codecov.io/gh/mateimicu/auto-tag)
 ![PyPI - License](https://img.shields.io/pypi/l/auto-tag)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fmateimicu%2Fauto-tag.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fmateimicu%2Fauto-tag?ref=badge_shield)
 
 
 Automatically tag a branch with the following SemVersion tag.
@@ -239,3 +240,7 @@ If another user interacts with git while this process is taking place it will us
 ---
 This project is licensed under the terms of the MIT license.
 
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fmateimicu%2Fauto-tag.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fmateimicu%2Fauto-tag?ref=badge_large)

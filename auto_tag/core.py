@@ -51,14 +51,17 @@ class AutoTag():
         :rtype: semantic_version.Version
         """
         latest_tag = None
-        tags_name = [self._clean_tag_name(tag.name) for tag in repo.tags]
+        clean_tags = [
+            (tag, self._clean_tag_name(tag.name)) for tag in repo.tags
+        ]
         sem_versions = [
-            semantic_version.Version(tag_name) for tag_name in tags_name
+            (tag, semantic_version.Version(name)) for tag, name in clean_tags
         ]
         if sem_versions:
-            latest_tag = max(sem_versions)
-        self._logger.debug('Found latest tag %s', latest_tag)
-        return latest_tag
+            latest_tag, latest_tag_sem = max(sem_versions, key=lambda x: x[1])
+            self._logger.debug('Found latest tag %s', latest_tag_sem)
+            return latest_tag, latest_tag_sem
+        return None, None
 
     @staticmethod
     def bump_tag(tag, change_type):
@@ -160,13 +163,12 @@ class AutoTag():
         return env_vars
 
     @staticmethod
-    def _is_last_commit_already_tagged(repo, last_tag_name, branch_name):
+    def _is_last_commit_already_tagged(repo, last_tag, branch_name):
         """Check if the last_tag is also applied on the latest commit."""
-        if last_tag_name is None:
+        if last_tag is None:
             return False
-        tag = repo.tags[str(last_tag_name)]
         commit = list(repo.iter_commits(rev=branch_name))[0]
-        return tag.commit == commit
+        return last_tag.commit == commit
 
     def work(self):
         """Main entry point.
@@ -175,13 +177,13 @@ class AutoTag():
         """
         repo = git.Repo(self._repo, odbt=git.GitDB)
         self._logger.info('Start tagging %s', repo)
-        last_tag = self.get_latest_tag(repo)
+        last_tag, latest_tag_sem = self.get_latest_tag(repo)
 
         self._logger.info('Found tag %s', last_tag)
         commits = self.get_all_commits_from_a_tag(
             repo, self._branch, last_tag)
         type_of_change = self.get_change_type(commits)
-        next_tag = self.bump_tag(last_tag, type_of_change)
+        next_tag = self.bump_tag(latest_tag_sem, type_of_change)
         tag = 'v{}'.format(next_tag) if self._append_v else str(next_tag)
 
         self._logger.info('Bumping tag %s -> %s', last_tag, next_tag)

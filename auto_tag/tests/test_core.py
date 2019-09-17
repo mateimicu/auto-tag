@@ -73,6 +73,52 @@ def test_simple_flow_existing_tag(
 
 @pytest.mark.parametrize('existing_tag, next_tag',
                          TEST_DATA_SIMPLE_TAG_PATCH_BUMP)
+def test_simple_flow_existing_tag(
+        existing_tag, next_tag, simple_repo,  default_detectors):
+    """Test a simple flow locally."""
+    repo = git.Repo(simple_repo, odbt=git.GitDB)
+    repo.create_tag(
+        'v'+existing_tag,
+        ref=list(repo.iter_commits())[-1])
+
+    autotag = core.AutoTag(
+        repo=simple_repo,
+        branch='master',
+        upstream_remotes=None,
+        detectors=default_detectors,
+        git_name=TEST_NAME,
+        git_email=TEST_EMAIL)
+
+    autotag.work()
+    assert next_tag in repo.tags
+
+
+def test_simple_flow_existing_tag_mixed_tags(simple_repo,
+                                             default_detectors):
+    """Test the support for mixed tags."""
+    repo = git.Repo(simple_repo, odbt=git.GitDB)
+    repo.create_tag(
+        '2.0.1',
+        ref=list(repo.iter_commits())[0])
+
+    repo.create_tag(
+        'v2.0.1',
+        ref=list(repo.iter_commits())[0])
+
+    autotag = core.AutoTag(
+        repo=simple_repo,
+        branch='master',
+        upstream_remotes=None,
+        detectors=default_detectors,
+        git_name=TEST_NAME,
+        git_email=TEST_EMAIL)
+
+    autotag.work()
+    assert '2.0.2' in repo.tags
+
+
+@pytest.mark.parametrize('existing_tag, next_tag',
+                         TEST_DATA_SIMPLE_TAG_PATCH_BUMP)
 def test_simple_flow_existing_tag_on_last_commit(
         existing_tag, next_tag, simple_repo,  default_detectors):
     """Test a simple flow locally."""

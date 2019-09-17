@@ -73,7 +73,7 @@ def test_simple_flow_existing_tag(
 
 @pytest.mark.parametrize('existing_tag, next_tag',
                          TEST_DATA_SIMPLE_TAG_PATCH_BUMP)
-def test_simple_flow_existing_tag(
+def test_simple_flow_existing_tag_mixed_tags(
         existing_tag, next_tag, simple_repo,  default_detectors):
     """Test a simple flow locally."""
     repo = git.Repo(simple_repo, odbt=git.GitDB)

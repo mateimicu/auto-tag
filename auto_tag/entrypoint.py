@@ -6,7 +6,7 @@ import sys
 import logging
 import logging.config
 
-from auto_tag import core, cli, detectors_config
+from auto_tag import core, cli, detectors_config, tag_search_strategy
 
 
 def main(cli_args):
@@ -36,10 +36,14 @@ def main(cli_args):
             args.config)
     else:
         config = detectors_config.DetectorsConfig.from_default()
+
+    search_strategy = tag_search_strategy.SEARCH_METHODS_MAPPING[
+        args.tag_search_strategy]
     autotag = core.AutoTag(
         repo=args.repo, branch=args.branch,
         upstream_remotes=args.upstream_remote,
         detectors=config.detectors,
+        search_strategy=search_strategy,
         git_name=args.name, git_email=args.email,
         append_v=args.append_v_to_tag,
         skip_if_exists=args.skip_tag_if_one_already_present,

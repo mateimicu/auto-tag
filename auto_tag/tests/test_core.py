@@ -10,6 +10,8 @@ import pytest
 from auto_tag import core
 # pylint:disable=invalid-name
 
+BIG_TAG = '100.100.100'
+
 TEST_DATA_SIMPLE_TAG_PATCH_BUMP = [
     ('0.0.1', '0.0.2'),
     ('0.1.1', '0.1.2'),
@@ -34,8 +36,15 @@ TEST_NAME_2 = 'test_user_2'
 TEST_EMAIL_2 = 'test_2@email.com'
 
 
-def test_simple_flow_no_existing_tag(simple_repo,  default_detectors):
-    """Test a simple flow locally."""
+def test_simple_flow_no_existing_tag(simple_repo, default_detectors):
+    """Test a simple flow.
+
+    Scenario:
+        A repository with a few commits but no tag.
+    Outcome:
+        Tag 0.0.1 should be created.
+
+    """
     repo = git.Repo(simple_repo, odbt=git.GitDB)
 
     autotag = core.AutoTag(
@@ -51,8 +60,75 @@ def test_simple_flow_no_existing_tag(simple_repo,  default_detectors):
 
 @pytest.mark.parametrize('existing_tag, next_tag',
                          TEST_DATA_SIMPLE_TAG_PATCH_BUMP)
+def test_simple_flow_existing_tag_and_extra_tag_on_separate_branch(
+        existing_tag, next_tag, simple_repo, default_detectors):
+    """Test to see if only specified branch is evaluated.
+
+    Idea:
+        If we already have tags on a another branch (let's say `new_branch`)
+        if we want to auto-tag branch `master` then we should only look
+        at tags on this branch.
+    Scenario:
+        Branch `master` has `current_tag` and `new_branch` has tag `BIG_TAG`.
+        `BIG_TAG` is bigger then `current_tag`.
+    Output:
+        When we auto-tag the `master` branch then it should apply `next_tag`
+    """
+    repo = git.Repo(simple_repo, odbt=git.GitDB)
+    repo.create_tag(
+        existing_tag,
+        ref=list(repo.iter_commits())[-1])
+
+    # create a bigger tag on a new branch
+    new_branch = repo.create_head('new_branch', force=True)
+    repo.head.reference = new_branch
+    # repo.head.reset(index=False, working_tree=False)
+
+    file_path = os.path.join(simple_repo, 'extra_file')
+    commit_text = 'commit an extra file'
+    open(file_path, 'w+').close()
+    extra_commit = repo.index.commit(commit_text)
+    repo.create_tag(BIG_TAG, extra_commit)
+
+    autotag = core.AutoTag(
+        repo=simple_repo,
+        branch='master',
+        upstream_remotes=None,
+        detectors=default_detectors,
+        git_name=TEST_NAME,
+        git_email=TEST_EMAIL)
+
+    autotag.work()
+    assert next_tag in repo.tags
+
+
+# pylint: disable=unused-argument, fixme
+@pytest.mark.parametrize('existing_tag, next_tag',
+                         TEST_DATA_SIMPLE_TAG_PATCH_BUMP)
+def test_simple_flow_existing_tag_and_tag_exists_on_another_branch(
+        existing_tag, next_tag, simple_repo, default_detectors):
+    """Test to see if only specified branch is evaluated.
+
+    Idea:
+        If we already have tags on a dolerite branch (let's say `new_branch`)
+        if we want to auto-tag branch `master` then we should only look
+        at tags on this branch.
+    Scenario:
+        Branch `master` has `current_tag` and `new_branch` has tag
+        `next_tag`.
+        `next_tag` is bigger then `current_tag`.
+    Output:
+        When we auto-tag the `master` branch then it should throw an error
+        because we can't have two tags with the same name.
+    """
+    # TODO(mmicu): to be implemented
+    assert True
+
+
+@pytest.mark.parametrize('existing_tag, next_tag',
+                         TEST_DATA_SIMPLE_TAG_PATCH_BUMP)
 def test_simple_flow_existing_tag(
-        existing_tag, next_tag, simple_repo,  default_detectors):
+        existing_tag, next_tag, simple_repo, default_detectors):
     """Test a simple flow locally."""
     repo = git.Repo(simple_repo, odbt=git.GitDB)
     repo.create_tag(
@@ -73,8 +149,8 @@ def test_simple_flow_existing_tag(
 
 @pytest.mark.parametrize('existing_tag, next_tag',
                          TEST_DATA_SIMPLE_TAG_PATCH_BUMP)
-def test_simple_flow_existing_tag(
-        existing_tag, next_tag, simple_repo,  default_detectors):
+def test_simple_flow_existing_tag_mixed_tags(
+        existing_tag, next_tag, simple_repo, default_detectors):
     """Test a simple flow locally."""
     repo = git.Repo(simple_repo, odbt=git.GitDB)
     repo.create_tag(
@@ -93,8 +169,8 @@ def test_simple_flow_existing_tag(
     assert next_tag in repo.tags
 
 
-def test_simple_flow_existing_tag_mixed_tags(simple_repo,
-                                             default_detectors):
+def test_simple_flow_existing_tag_mixed_tag(simple_repo,
+                                            default_detectors):
     """Test the support for mixed tags."""
     repo = git.Repo(simple_repo, odbt=git.GitDB)
     repo.create_tag(
@@ -120,7 +196,7 @@ def test_simple_flow_existing_tag_mixed_tags(simple_repo,
 @pytest.mark.parametrize('existing_tag, next_tag',
                          TEST_DATA_SIMPLE_TAG_PATCH_BUMP)
 def test_simple_flow_existing_tag_on_last_commit(
-        existing_tag, next_tag, simple_repo,  default_detectors):
+        existing_tag, next_tag, simple_repo, default_detectors):
     """Test a simple flow locally."""
     repo = git.Repo(simple_repo, odbt=git.GitDB)
     repo.create_tag(
@@ -143,7 +219,7 @@ def test_simple_flow_existing_tag_on_last_commit(
 @pytest.mark.parametrize('existing_tag, next_tag',
                          TEST_DATA_SIMPLE_TAG_PATCH_BUMP)
 def test_simple_flow_existing_tag_append_v(
-        existing_tag, next_tag, simple_repo,  default_detectors):
+        existing_tag, next_tag, simple_repo, default_detectors):
     """Test a simple flow locally."""
     repo = git.Repo(simple_repo, odbt=git.GitDB)
     repo.create_tag(

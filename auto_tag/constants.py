@@ -12,6 +12,19 @@ CHANGE_TYPE_PAIRS = (
     (PATCH, 'PATCH'),
 )
 
+SEARCH_STRATEGY_BIGGEST_TAG_IN_REPO = 'biggest-tag-in-repo'
+SEARCH_STRATEGY_BIGGEST_TAG_IN_BRANCH = 'biggest-tag-in-branch'
+SEARCH_STRATEGY_LATEST_TAG_IN_REPO = 'latest-tag-in-repo'
+SEARCH_STRATEGY_LATEST_TAG_IN_BRANCH = 'latest-tag-in-branch'
+
+SEARCH_STRATEGYS = [
+    SEARCH_STRATEGY_BIGGEST_TAG_IN_REPO,
+    SEARCH_STRATEGY_BIGGEST_TAG_IN_BRANCH,
+    SEARCH_STRATEGY_LATEST_TAG_IN_REPO,
+    SEARCH_STRATEGY_LATEST_TAG_IN_BRANCH,
+]
+
+# pylint: disable=unnecessary-comprehension
 CHANGE_TYPES = {value: name for value, name in CHANGE_TYPE_PAIRS}
 CHANGE_TYPES_REVERSE = {name: value for value, name in CHANGE_TYPE_PAIRS}
 

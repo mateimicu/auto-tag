@@ -10,6 +10,8 @@ import pytest
 from auto_tag import entrypoint
 # pylint:disable=invalid-name
 
+BIG_TAG = '100.100.100'
+
 TEST_DATA_SIMPLE_TAG_PATCH_BUMP = [
     ('0.0.1', '0.0.2'),
     ('0.1.1', '0.1.2'),
@@ -340,3 +342,44 @@ def test_tag_message_user_exists_and_specify_make_sure_clean_env(simple_repo, de
 
     assert TEST_NAME == repo_config_name
     assert TEST_EMAIL == repo_config_email
+
+
+@pytest.mark.parametrize('existing_tag, next_tag',
+                         TEST_DATA_SIMPLE_TAG_PATCH_BUMP)
+def test_simple_flow_existing_tag_and_extra_tag_on_separate_branch(
+        existing_tag, next_tag, simple_repo):
+    """Test to see if only specified branch is evaluated.
+
+    Idea:
+        If we already have tags on a another branch (let's say `new_branch`)
+        if we want to auto-tag branch `master` then we should only look
+        at tags on this branch.
+    Scenario:
+        Branch `master` has `current_tag` and `new_branch` has tag `BIG_TAG`.
+        `BIG_TAG` is bigger then `current_tag`.
+    Output:
+        When we auto-tag the `master` branch then it should apply `next_tag`
+    """
+    repo = git.Repo(simple_repo, odbt=git.GitDB)
+    repo.create_tag(
+        existing_tag,
+        ref=list(repo.iter_commits())[-1])
+
+    # create a bigger tag on a new branch
+    new_branch = repo.create_head('new_branch', force=True)
+    repo.head.reference = new_branch
+    # repo.head.reset(index=False, working_tree=False)
+
+    file_path = os.path.join(simple_repo, 'extra_file')
+    commit_text = 'commit an extra file'
+    open(file_path, 'w+').close()
+    extra_commit = repo.index.commit(commit_text)
+    repo.create_tag(BIG_TAG, extra_commit)
+
+    entrypoint.main(
+        ['-r', simple_repo,
+         '-b', 'master',
+         '--name', TEST_NAME,
+         '--email', TEST_EMAIL])
+
+    assert next_tag in repo.tags

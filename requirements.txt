@@ -1,4 +1,4 @@
 gitpython==3.0.5
-semantic_version==2.8.2
+semantic_version==2.8.3
 confuse==1.0.0
 six==1.13.0

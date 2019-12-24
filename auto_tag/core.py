@@ -9,12 +9,14 @@ import git
 
 from auto_tag import constants
 from auto_tag import git_custom_env
+from auto_tag import tag_search_strategy
 
 
 class AutoTag():
     """Class  wrapper for auto-tag functionality."""
 
     def __init__(self, repo, branch, upstream_remotes, detectors,
+                 search_strategy=tag_search_strategy.DEFAULT_STRATEGY,
                  git_name=None, git_email=None, logger=None,
                  append_v=False, skip_if_exists=False):
         """Initializa the AutoTag class.
@@ -27,41 +29,29 @@ class AutoTag():
         self._detectors = detectors
         self._branch = branch
         self._upstream_remotes = upstream_remotes or []
+        self._search_strategy = search_strategy
         self._git_name = git_name
         self._git_email = git_email
         self._append_v = append_v
-        self._skip_if_exists = skip_if_exists
 
-    def _clean_tag_name(self, tag_name):
-        """Remove common mistakes when using semantic versioning."""
-        for prefix in constants.PREFIX_TO_ELIMINATE:
-            if tag_name.startswith(prefix):
-                clean_tag = tag_name[len(prefix):]
-                self._logger.debug(
-                    'Cleaning tag %s -> %s', tag_name, clean_tag)
-                return clean_tag
-        return tag_name
+        self._skip_if_exists = skip_if_exists
 
     def get_latest_tag(self, repo):
         """Return the last tag for the given repo in a Version class.
+
         :param repo: Repository to query for tags
         :type repo: git.Repo
 
         :returns: The latest tag from the repository
-        :rtype: semantic_version.Version
+        :rtype: (git.Tag, semantic_version.Version)
         """
-        latest_tag = None
-        clean_tags = [
-            (tag, self._clean_tag_name(tag.name)) for tag in repo.tags
-        ]
-        sem_versions = [
-            (tag, semantic_version.Version(name)) for tag, name in clean_tags
-        ]
-        if sem_versions:
-            latest_tag, latest_tag_sem = max(sem_versions, key=lambda x: x[1])
-            self._logger.debug('Found latest tag %s', latest_tag_sem)
-            return latest_tag, latest_tag_sem
-        return None, None
+        raw_tag = self._search_strategy(
+            repo=repo, branch=self._branch)
+        if raw_tag is None:
+            return None, None
+        sem_tag = semantic_version.Version(
+            tag_search_strategy.clean_tag_name(str(raw_tag)))
+        return raw_tag, sem_tag
 
     @staticmethod
     def bump_tag(tag, change_type):
@@ -153,15 +143,6 @@ class AutoTag():
             tag_message += '    * {}\n'.format(message.split('\n')[0].strip())
         return tag_message
 
-    def _preapre_custom_environment(self):
-        env_vars = {}
-        if self._git_name is not None:
-            env_vars['GIT_AUTHOR_NAME'] = self._git_name
-
-        if self._git_email is not None:
-            env_vars['GIT_AUTHOR_EMAIL'] = self._git_email
-        return env_vars
-
     @staticmethod
     def _is_last_commit_already_tagged(repo, last_tag, branch_name):
         """Check if the last_tag is also applied on the latest commit."""
@@ -184,6 +165,7 @@ class AutoTag():
             repo, self._branch, last_tag)
         type_of_change = self.get_change_type(commits)
         next_tag = self.bump_tag(latest_tag_sem, type_of_change)
+        # NOTE(mmicu): Here we need to check if the next tag exists
         tag = 'v{}'.format(next_tag) if self._append_v else str(next_tag)
 
         self._logger.info('Bumping tag %s -> %s', last_tag, next_tag)

@@ -22,3 +22,7 @@ class ConfigurationError(BaseAutoTagException):
 
 class CantFindBranch(BaseAutoTagException):
     """Can't find a specific branch"""
+
+
+class UnknowkSearchStrategy(BaseAutoTagException):
+    """Invalid search strategy."""

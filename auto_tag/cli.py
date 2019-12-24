@@ -5,6 +5,9 @@ CLI parser for auto-tag.
 import logging
 import argparse
 
+from auto_tag import constants
+from auto_tag import tag_search_strategy
+
 
 def get_parser():
     """Return the argument parser setup."""
@@ -39,5 +42,10 @@ def get_parser():
 
     parser.add_argument('--append-v-to-tag', action='store_true',
                         help='Append a v to the tag (ex v1.0.5)')
+
+    parser.add_argument('--tag-search-strategy',
+                        choices=constants.SEARCH_STRATEGYS,
+                        default=tag_search_strategy.DEFAULT_STRAGETY_NAME,
+                        help='Strategy for searching the tag.')
 
     return parser

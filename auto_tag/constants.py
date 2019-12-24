@@ -24,8 +24,7 @@ SEARCH_STRATEGYS = [
     SEARCH_STRATEGY_LATEST_TAG_IN_BRANCH,
 ]
 
-# pylint: disable=unnecessary-comprehension
-CHANGE_TYPES = {value: name for value, name in CHANGE_TYPE_PAIRS}
+CHANGE_TYPES = dict(CHANGE_TYPE_PAIRS)
 CHANGE_TYPES_REVERSE = {name: value for value, name in CHANGE_TYPE_PAIRS}
 
 PREFIX_TO_ELIMINATE = ['v']

@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 # install dependency's 
-pip3 install --user twine 
+pipenv install --dev
 
 # bumpversion
 # package the project 
-./setup.py sdist bdist_wheel
+pipenv run ./setup.py sdist bdist_wheel
 
 # check the package 
-twine check dist/*
+pipenv run twine check dist/*
 # check the publishing 
-twine upload --repository testpypi dist/*
+pipenv run twine upload --repository testpypi dist/*
 
 # publish the package
-twine upload --repository pypi dist/*
+pipenv run twine upload --repository pypi dist/*

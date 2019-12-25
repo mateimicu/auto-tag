@@ -20,19 +20,18 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install -r test-requirements.txt
-        pip install -e .
+        python -m pip install --upgrade pipenv 
+        pipenv install --dev
     - name: Start linting
       run: |
-        pylint --rcfile=.pylintrc auto_tag
+        pipenv run pylint --rcfile=.pylintrc auto_tag
     - name: Test with pytest
       run: |
-        pytest auto_tag
+        pipenv run pytest auto_tag
     - name: Check coverage
       env:
         CODECOV_TOKEN : ${{ secrets.CODECOV_TOKEN }}
       run: |
-        pytest --cov=auto_tag
-        codecov
+        pipenv run pytest --cov=auto_tag
+        pipenv run codecov
 

@@ -3,7 +3,11 @@
 Automatically tags branches base on commit message
 """
 import time
+from typing import Any
+from typing import List
+from typing import Optional
 
+import git
 import semantic_version
 
 from auto_tag import constants
@@ -11,7 +15,7 @@ from auto_tag import exception
 
 
 # pylint: disable=unused-argument
-def clean_tag_name(tag_name):
+def clean_tag_name(tag_name: str) -> str:
     """Remove common mistakes when using semantic versioning."""
     for prefix in constants.PREFIX_TO_ELIMINATE:
         if tag_name.startswith(prefix):
@@ -20,7 +24,8 @@ def clean_tag_name(tag_name):
     return tag_name
 
 
-def get_biggest_tag_in_repo(repo, *args, **kwargs):
+def get_biggest_tag_in_repo(
+        repo: git.Repo, *args: Any, **kwargs: Any) -> git.refs.tag.TagReference:
     """Return the last tag for the given repo in a Version class.
     :param repo: Repository to query for tags
     :type repo: git.Repo
@@ -41,7 +46,9 @@ def get_biggest_tag_in_repo(repo, *args, **kwargs):
     return None
 
 
-def _get_tags_on_branch(repo, branch_name):
+def _get_tags_on_branch(
+        repo: git.Repo,
+        branch_name: str) -> List[git.refs.tag.TagReference]:
     """Get all the tags on this specific branch.
 
     :param repo: Repository to query for tags
@@ -63,7 +70,9 @@ def _get_tags_on_branch(repo, branch_name):
     return found_tags
 
 
-def get_biggest_tag_in_branch(repo, branch, *args, **kwargs):
+def get_biggest_tag_in_branch(
+        repo: git.Repo, branch: str, *args: Any,
+        **kwargs: Any) -> Optional[git.refs.tag.TagReference]:
     """Return the last tag for the given repo in a Version class.
     :param repo: Repository to query for tags
     :type repo: git.Repo
@@ -85,7 +94,9 @@ def get_biggest_tag_in_branch(repo, branch, *args, **kwargs):
     return None
 
 
-def get_latest_tag_in_repo(repo, branch, *args, **kwargs):
+def get_latest_tag_in_repo(
+        repo: git.Repo, branch: str, *args: Any,
+        **kwargs: Any) -> git.refs.tag.TagReference:
     """Return the last tag for the given repo in a Version class.
     :param repo: Repository to query for tags
     :type repo: git.Repo
@@ -105,7 +116,9 @@ def get_latest_tag_in_repo(repo, branch, *args, **kwargs):
     return committed_date_to_tag[0][1]
 
 
-def get_latest_tag_in_branch(repo, branch, *args, **kwargs):
+def get_latest_tag_in_branch(
+        repo: git.Repo, branch: str, *args: Any,
+        **kwargs: Any) -> git.refs.tag.TagReference:
     """Return the last tag for the given repo in a Version class.
     :param repo: Repository to query for tags
     :type repo: git.Repo
@@ -146,11 +159,15 @@ DEFAULT_STRAGETY_NAME = constants.SEARCH_STRATEGY_BIGGEST_TAG_IN_BRANCH
 DEFAULT_STRATEGY = SEARCH_METHODS_MAPPING[DEFAULT_STRAGETY_NAME]
 
 
-def get_last_tag(repo, branch, search_method_name):
+def get_last_tag(repo: git.Repo, branch: str,
+                 search_method_name: str) -> git.refs.tag.TagReference:
     """Get the last tag according to the appropriate search strategy."""
-    search_strategy = SEARCH_METHODS_MAPPING.get(search_method_name, None)
+    search_strategy: Any = SEARCH_METHODS_MAPPING.get(
+        search_method_name, None)
 
     if search_strategy is None:
         raise exception.UnknowkSearchStrategy(
             '{} is not a search strategy supported.Choose form {}'.format(
                 search_method_name, SEARCH_METHODS_MAPPING.keys()))
+
+    return search_strategy(repo=repo, branch=branch)

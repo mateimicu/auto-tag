@@ -2,6 +2,9 @@
 """
 Automatically tags branches base on commit message
 """
+from typing import Optional
+from typing import Any
+
 import git
 
 
@@ -9,7 +12,8 @@ class GitCustomeEnvironment():
     """Custom Git Configuration context manager."""
 
     # pylint: disable=no-member
-    def __init__(self, repo_path, name, email):
+    def __init__(self, repo_path: str,
+                 name: Optional[str], email: Optional[str]) -> None:
         """Initialize the context manager."""
         self._repo = git.Repo(repo_path, odbt=git.GitDB)
         self._name = name
@@ -23,14 +27,15 @@ class GitCustomeEnvironment():
             if confi_w.has_option('user', 'email'):
                 self._old_email = confi_w.get_value('user', 'email')
 
-    def __enter__(self):
+    def __enter__(self) -> None:
         with self._repo.config_writer() as config_writer:
             if self._name is not None:
                 config_writer.set_value('user', 'name', self._name)
             if self._email is not None:
                 config_writer.set_value('user', 'email', self._email)
 
-    def __exit__(self, _type, value, traceback):
+    def __exit__(self, _type: Optional[Any],
+                 value: Optional[Any], traceback: Optional[Any]) -> None:
         with self._repo.config_writer() as conf_w:
             if not conf_w.has_section('user'):
                 return

@@ -10,6 +10,11 @@ import git
 import pytest
 
 from auto_tag import detectors_config
+from auto_tag import detectors
+from typing import Iterator
+from py._path.local import LocalPath
+from typing import List
+from typing import Union
 
 BRANCH_NAME_A = 'branch_a'
 BRANCH_NAME_B = 'branch_b'
@@ -27,7 +32,7 @@ TAGS = {
 
 
 @pytest.fixture
-def simple_repo(tmpdir):
+def simple_repo(tmpdir: LocalPath) -> str:
     """Return a simple repository with 3 basic commits and no tags."""
     repo_path = os.path.join(tmpdir, 'test-repo')
     repo = git.Repo.init(repo_path)
@@ -43,14 +48,14 @@ def simple_repo(tmpdir):
 
 
 @pytest.fixture
-def default_detectors():
+def default_detectors() -> List[detectors.BaseDetector]:
     """Return a simple repository with 3 basic commits and no tags."""
     config = detectors_config.DetectorsConfig.from_default()
     return config.detectors
 
 
 @pytest.fixture
-def simple_repo_minor_commit(simple_repo):
+def simple_repo_minor_commit(simple_repo: str) -> str:
     """Return a simple repository with 3 basic commits and no tags."""
     repo = git.Repo(simple_repo)
 
@@ -63,7 +68,7 @@ def simple_repo_minor_commit(simple_repo):
 
 
 @pytest.fixture
-def simple_repo_major_commit(simple_repo):
+def simple_repo_major_commit(simple_repo: str) -> str:
     """Return a simple repository with 3 basic commits and no tags."""
     repo = git.Repo(simple_repo)
 
@@ -76,7 +81,7 @@ def simple_repo_major_commit(simple_repo):
 
 
 @pytest.fixture
-def simple_repo_two_branches(simple_repo):
+def simple_repo_two_branches(simple_repo: str) -> str:
     """Return a repository with two branches."""
     repo = git.Repo(simple_repo, odbt=git.GitDB)
     # NOTE(mmicu): because we only have seconds granularity

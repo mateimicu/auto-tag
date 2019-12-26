@@ -9,6 +9,7 @@ import pytest
 import time
 
 from auto_tag import tag_search_strategy
+from typing import Callable
 # pylint:disable=invalid-name
 
 
@@ -22,8 +23,8 @@ SCENARIOS = [
 
 @pytest.mark.parametrize('search_strategy, target_branch, expected_tag',
                          SCENARIOS)
-def test_tag_search_strategy(search_strategy, target_branch, expected_tag,
-                             simple_repo_two_branches):
+def test_tag_search_strategy(search_strategy: Callable, target_branch: str, expected_tag: str,
+                             simple_repo_two_branches: str) -> None:
     """Test to see if `get_biggest_tag_in_repo` returns the biggest tag
        from all branches
 

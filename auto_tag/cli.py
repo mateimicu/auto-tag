@@ -9,7 +9,7 @@ from auto_tag import constants
 from auto_tag import tag_search_strategy
 
 
-def get_parser():
+def get_parser() -> argparse.ArgumentParser:
     """Return the argument parser setup."""
     parser = argparse.ArgumentParser(
         description='Tag branch based on commit messages')

@@ -3,11 +3,18 @@
 Automatically tags branches base on commit message
 """
 import logging
+from typing import (
+    Callable,
+    Tuple,
+    Optional,
+    List,
+)
 
 import semantic_version
 import git
 
 from auto_tag import constants
+from auto_tag import detectors as auto_tag_detectors
 from auto_tag import git_custom_env
 from auto_tag import tag_search_strategy
 
@@ -15,10 +22,15 @@ from auto_tag import tag_search_strategy
 class AutoTag():
     """Class  wrapper for auto-tag functionality."""
 
-    def __init__(self, repo, branch, upstream_remotes, detectors,
-                 search_strategy=tag_search_strategy.DEFAULT_STRATEGY,
-                 git_name=None, git_email=None, logger=None,
-                 append_v=False, skip_if_exists=False):
+    def __init__(
+            self, repo: str, branch: str,
+            upstream_remotes: Optional[List[str]],
+            detectors: List[auto_tag_detectors.BaseDetector],
+            search_strategy: Callable = tag_search_strategy.DEFAULT_STRATEGY,  # type: ignore
+            git_name: Optional[str] = None,
+            git_email: Optional[str] = None,
+            logger: Optional[logging.Logger] = None,
+            append_v: bool = False, skip_if_exists: bool = False) -> None:
         """Initializa the AutoTag class.
 
         :param logger: If an existing logger is to be used
@@ -36,10 +48,11 @@ class AutoTag():
 
         self._skip_if_exists = skip_if_exists
 
-    def get_latest_tag(self, repo):
+    def get_latest_tag(self, repo: git.Repo) -> Tuple[Optional[
+            git.refs.tag.TagReference], Optional[semantic_version.Version]]:
         """Return the last tag for the given repo in a Version class.
 
-        :param repo: Repository to query for tags
+        :param repo: git.Repository to query for tags
         :type repo: git.Repo
 
         :returns: The latest tag from the repository
@@ -54,7 +67,9 @@ class AutoTag():
         return raw_tag, sem_tag
 
     @staticmethod
-    def bump_tag(tag, change_type):
+    def bump_tag(
+            tag: Optional[semantic_version.Version],
+            change_type: int) -> semantic_version.Version:
         """Return the next tag version based on the change type."""
         if tag is None:
             return semantic_version.Version('0.0.1')
@@ -67,12 +82,15 @@ class AutoTag():
 
         return tag.next_patch()
 
-    def get_all_commits_from_a_tag(self, repo, branch, tag):
+    def get_all_commits_from_a_tag(
+            self, repo: git.Repo, branch: str,
+            tag: Optional[git.refs.tag.TagReference]) -> List[
+                git.objects.commit.Commit]:
         """
         Return all commits from the branch that
         happened father the specified tag.
 
-        :param repo: Repository to query for commits
+        :param repo: git.Repository to query for commits
         :type repo: git.Repo
 
         :param branch: Branch to work on
@@ -82,7 +100,7 @@ class AutoTag():
         :type repo: semantic_version.Version
 
         :returns: List of commits.
-        :rtype: list of git.Commit
+        :rtype: list of git.objects.commit.Commit
         """
         stop_commit = None
         if str(tag) in repo.tags:
@@ -97,7 +115,7 @@ class AutoTag():
             'Commits found from after tag %s: %s', tag, commits)
         return commits
 
-    def get_change_type(self, commits):
+    def get_change_type(self, commits: List[git.objects.commit.Commit]) -> int:
         """Evaluate all detectors on a commit and decide on the change type."""
         change_type = constants.PATCH
         for commit in commits:
@@ -108,14 +126,14 @@ class AutoTag():
         return change_type
 
     @staticmethod
-    def get_remote(repo, name):
-        """Return the git.Remote object base on the name."""
+    def get_remote(repo: git.Repo, name: str) -> git.remote.Remote:
+        """Return the git.remote.Remote object base on the name."""
         for remote in repo.remotes:
             if remote.name == name:
                 return remote
         return None
 
-    def push_to_remotes(self, repo, tag):
+    def push_to_remotes(self, repo: git.Repo, tag: str) -> None:
         """Push a tag to the specified remotes."""
         if self._upstream_remotes:
             self._logger.info('Start pushing to remotes: %s.',
@@ -133,7 +151,8 @@ class AutoTag():
                     'Can\'t find remote with name `%s`', remote_name)
 
     @staticmethod
-    def _create_tag_message(commits, tag):
+    def _create_tag_message(commits: List[git.objects.commit.Commit],
+                            tag: semantic_version.Version) -> str:
         """Create a tag message that contains informations
         from the commits. """
 
@@ -144,14 +163,17 @@ class AutoTag():
         return tag_message
 
     @staticmethod
-    def _is_last_commit_already_tagged(repo, last_tag, branch_name):
+    def _is_last_commit_already_tagged(
+            repo: git.Repo,
+            last_tag: Optional[git.refs.tag.TagReference],
+            branch_name: str) -> bool:
         """Check if the last_tag is also applied on the latest commit."""
         if last_tag is None:
             return False
         commit = list(repo.iter_commits(rev=branch_name))[0]
         return last_tag.commit == commit
 
-    def work(self):
+    def work(self) -> None:
         """Main entry point.
 
         :param args: Argument to work on

@@ -11,6 +11,7 @@ pytest-parallel = "==0.0.9"
 codecov = "==2.0.15"
 twine = "*"
 auto-tag = {editable = true,path = "."}
+mypy = "*"
 
 [packages]
 auto-tag = {editable = true,path = "."}

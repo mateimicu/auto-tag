@@ -2,14 +2,18 @@
 """
 Prepare Detectors based on a file config.
 """
+from typing import Any
+from typing import Optional
+from typing import Union
+from typing import List
 import logging
 import io
 import yaml
 
-
 from auto_tag import exception
 from auto_tag import detectors
 from auto_tag import constants
+
 
 # pylint:disable=too-few-public-methods
 
@@ -17,24 +21,24 @@ from auto_tag import constants
 class DetectorsConfig():
     """Handles instantiation of detectors based on a config file."""
 
-    def __init__(self, data, logger=None):
+    def __init__(self, data: str, logger: Optional[Any] = None) -> None:
         """Initiate the config."""
         self._data = data
         self._logger = logger or logging.getLogger(__name__)
-        self._detectors = None
+        self._detectors: Union[List[detectors.BaseDetector], None] = None
 
     @classmethod
-    def from_file(cls, filepath, logger=None):
+    def from_file(cls, filepath: str, logger: Optional[Any] = None) -> Any:
         """Read config from a file."""
         with open(filepath, 'r') as file_stream:
             return cls(file_stream.read(), logger)
 
     @classmethod
-    def from_default(cls, logger=None):
+    def from_default(cls, logger: Optional[Any] = None) -> Any:
         """Return a configuration of the default setting."""
         return cls(constants.DEFAULT_CONFIG_DETECTORS, logger)
 
-    def _parse_detectors(self):
+    def _parse_detectors(self) -> None:
         """Parse the file and instantiate detectors."""
         self._detectors = []
         stream = io.StringIO(self._data)
@@ -76,7 +80,7 @@ class DetectorsConfig():
             self._detectors.append(detector_obj)
 
     @property
-    def detectors(self):
+    def detectors(self) -> Union[List[detectors.BaseDetector], None]:  # type: ignore
         """Return list of detectors."""
         if self._detectors is None:
             self._parse_detectors()

@@ -2,6 +2,7 @@
 """
 Package entry point.
 """
+from typing import List
 import sys
 import logging
 import logging.config
@@ -9,7 +10,7 @@ import logging.config
 from auto_tag import core, cli, detectors_config, tag_search_strategy
 
 
-def main(cli_args):
+def main(cli_args: List[str]) -> None:
     """Main entry point for Auto-Tag module."""
 
     parser = cli.get_parser()
@@ -43,7 +44,7 @@ def main(cli_args):
         repo=args.repo, branch=args.branch,
         upstream_remotes=args.upstream_remote,
         detectors=config.detectors,
-        search_strategy=search_strategy,
+        search_strategy=search_strategy,  # type: ignore
         git_name=args.name, git_email=args.email,
         append_v=args.append_v_to_tag,
         skip_if_exists=args.skip_tag_if_one_already_present,

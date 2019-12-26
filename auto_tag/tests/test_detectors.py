@@ -17,28 +17,28 @@ TEST_DATA_REGEX_DETECTOR = [
 ]
 
 
-def test_factory_detector_happy_flow():
+def test_factory_detector_happy_flow() -> None:
     """Test to see if the factory returns what we expect."""
     assert (
         detectors.detector_factory('CommitMessageContainsDetector') ==
         detectors.CommitMessageContainsDetector)
 
 
-def test_factory_detector_no_existing_detector():
+def test_factory_detector_no_existing_detector() -> None:
     """Test to see if the factory raises an exception
        for a non existing detector."""
     with pytest.raises(exception.DetectorNotFound):
         assert detectors.detector_factory('NOT_EXISTING_DETECTOR')
 
 
-def test_CommitMessageHeadStartsWithDetector_validation_type():
+def test_CommitMessageHeadStartsWithDetector_validation_type() -> None:
     """Check the validation for the detector."""
     detector = detectors.CommitMessageHeadStartsWithDetector(
         'name', 'MAJOR', pattern='test-pattern')
     assert detector.validate_detector_params() is None
 
 
-def test_CommitMessageHeadStartsWithDetector_invalid_type():
+def test_CommitMessageHeadStartsWithDetector_invalid_type() -> None:
     """Check to see if the detectors validate the change_type."""
     detector = detectors.CommitMessageHeadStartsWithDetector(
         'name', 'BAD_CHANGE_TYPE', pattern='test-pattern')
@@ -46,7 +46,7 @@ def test_CommitMessageHeadStartsWithDetector_invalid_type():
         assert detector.validate_detector_params()
 
 
-def test_CommitMessageHeadStartsWithDetector_invalid_pattern():
+def test_CommitMessageHeadStartsWithDetector_invalid_pattern() -> None:
     """Check to see if the detectors validate the pattern."""
     detector = detectors.CommitMessageHeadStartsWithDetector(
         'name', 'BAD_CHANGE_TYPE', pattern=[])
@@ -54,7 +54,7 @@ def test_CommitMessageHeadStartsWithDetector_invalid_pattern():
         assert detector.validate_detector_params()
 
 
-def test_CommitMessageHeadStartsWithDetector_trigger(simple_repo):
+def test_CommitMessageHeadStartsWithDetector_trigger(simple_repo: str) -> None:
     """Check the happy flow of the trigger."""
     repo = git.Repo(simple_repo, odbt=git.GitDB)
     pattern = 'abcd'
@@ -68,7 +68,7 @@ def test_CommitMessageHeadStartsWithDetector_trigger(simple_repo):
     assert detector.evaluate(commit)
 
 
-def test_CommitMessageHeadStartsWithDetector_not_trigger(simple_repo):
+def test_CommitMessageHeadStartsWithDetector_not_trigger(simple_repo: str) -> None:
     """Check to see if the detector avoids miss matches."""
     repo = git.Repo(simple_repo, odbt=git.GitDB)
     pattern = 'abcd'
@@ -82,7 +82,7 @@ def test_CommitMessageHeadStartsWithDetector_not_trigger(simple_repo):
     assert not detector.evaluate(commit)
 
 
-def test_CommitMessageHeadStartsWithDetector_trigger_strip(simple_repo):
+def test_CommitMessageHeadStartsWithDetector_trigger_strip(simple_repo: str) -> None:
     """Check the strip functionality."""
     repo = git.Repo(simple_repo, odbt=git.GitDB)
     pattern = 'abcd'
@@ -100,7 +100,7 @@ def test_CommitMessageHeadStartsWithDetector_trigger_strip(simple_repo):
     assert not detector_no_strip.evaluate(commit)
 
 
-def test_CommitMessageHeadStartsWithDetector_trigger_case(simple_repo):
+def test_CommitMessageHeadStartsWithDetector_trigger_case(simple_repo: str) -> None:
     """Validate the case sensitivity functionality."""
     repo = git.Repo(simple_repo, odbt=git.GitDB)
     pattern = 'Abcd'
@@ -122,7 +122,7 @@ def test_CommitMessageHeadStartsWithDetector_trigger_case(simple_repo):
     assert detector_insesitive.evaluate(commit)
 
 
-def test_CommitMessageContainsDetector_trigger(simple_repo):
+def test_CommitMessageContainsDetector_trigger(simple_repo: str) -> None:
     """Check the happy flow of the trigger."""
     repo = git.Repo(simple_repo, odbt=git.GitDB)
     pattern = 'abcd'
@@ -139,7 +139,7 @@ def test_CommitMessageContainsDetector_trigger(simple_repo):
 @pytest.mark.parametrize('pattern, message, expected',
                          TEST_DATA_REGEX_DETECTOR)
 def test_CommitMessageMatchesRegexDetector_trigger(
-        pattern, message, expected, simple_repo):
+        pattern: str, message: str, expected: bool, simple_repo: str) -> None:
     """Check the happy flow of the trigger."""
     repo = git.Repo(simple_repo, odbt=git.GitDB)
     file_path = os.path.join(repo.working_dir, 'dummy_file')

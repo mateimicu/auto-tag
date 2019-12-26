@@ -9,7 +9,7 @@ from auto_tag import detectors
 # pylint:disable=invalid-name
 
 
-def test_detector_config():
+def test_detector_config() -> None:
     """Test to see if the factory returns what we expect."""
     path_to_file = os.path.join(
         os.path.dirname(os.path.realpath(__file__)),

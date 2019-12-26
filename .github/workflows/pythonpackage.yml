@@ -25,6 +25,9 @@ jobs:
     - name: Start linting
       run: |
         pipenv run pylint --rcfile=.pylintrc auto_tag
+    - name: MyPy type checking
+      run: |
+        pipenv run mypy auto_tag
     - name: Test with pytest
       run: |
         pipenv run pytest auto_tag

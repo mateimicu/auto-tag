@@ -8,10 +8,12 @@
 ![PyPI - License](https://img.shields.io/pypi/l/auto-tag)
 
 
-Automatically tag a branch with the following SemVersion tag.
+Automatically tag a branch with the next semantic version tag.
 
-This is useful if you want to automatically tag something merged on the master, for example, microservices.
-If there is a trigger based on tags then this can be used to apply the tags.
+This is useful if you want to generate tags every time something is merged.
+Microservice and GitOps repository are good candidates for this type of action.
+
+
 
 
 # TOC
@@ -36,30 +38,10 @@ usage: auto-tag [-h] [-b BRANCH] [-r REPO]
                 [-u [UPSTREAM_REMOTE [UPSTREAM_REMOTE ...]]]
                 [-l {CRITICAL,FATAL,ERROR,WARN,WARNING,INFO,DEBUG,NOTSET}]
                 [--name NAME] [--email EMAIL] [-c CONFIG]
-                [--skip-tag-if-one-already-present] [--append-v-to-tags]
+                [--skip-tag-if-one-already-present] [--append-v-to-tag]
+                [--tag-search-strategy {biggest-tag-in-repo,biggest-tag-in-branch,latest-tag-in-repo,latest-tag-in-branch}]
 
-Tag branch based on commit messages
-
-optional arguments:
-  -h, --help            show this help message and exit
-  -b BRANCH, --branch BRANCH
-                        On what branch to work on. Default `master`
-  -r REPO, --repo REPO  Path to repository. Default `.`
-  -u [UPSTREAM_REMOTE [UPSTREAM_REMOTE ...]], --upstream_remote [UPSTREAM_REMOTE [UPSTREAM_REMOTE ...]]
-                        To what remote to push to.Can be specified multiple
-                        time.
-  -l {CRITICAL,FATAL,ERROR,WARN,WARNING,INFO,DEBUG,NOTSET}, --logging {CRITICAL,FATAL,ERROR,WARN,WARNING,INFO,DEBUG,NOTSET}
-                        Logging level.
-  --name NAME           User name used for creating git objects.If not
-                        specified the system one will be used.
-  --email EMAIL         Email name used for creating git objects.If not
-                        specified the system one will be used.
-  -c CONFIG, --config CONFIG
-                        Path to detectors configuration.
-  --skip-tag-if-one-already-present
-                        If a tag is already present on the latest commit don't
-                        apply a new tag
-  --append-v-to-tags    Append a v to the tag (ex v1.0.5)
+.....
 ```
 
 # How it Works
@@ -67,7 +49,7 @@ optional arguments:
 The flow is as follows:
 - figure our repository based on the argument
 - load detectors from file if specified (`-c` option), if none specified load default ones (see [Detectors](#detectors))
-- check for the last tag 
+- check for the last tag (depending on the search strategy see [Search Strategy](#search-strategy)
 - look at all commits done after that tag on a specific branch (or from the start of the repository if no tag is found)
 - apply the detector (see [Detectors](#detectors)) on each commit and save the highest change detected (PATH, MINOR, MAJOR)
 - bump the last tag with the approbate change  and apply it using the default git author in the system or a specific one (see [Git Author](#git-author))
@@ -75,6 +57,7 @@ The flow is as follows:
 
 
 # Examples
+
 Here we can see in commit `2245d5d` that it stats with `feature(`
 so the latest know tag (`0.2.1`) was bumped to `0.3.0`
 ```
@@ -93,6 +76,7 @@ so the latest know tag (`0.2.1`) was bumped to `0.3.0`
 9ef3be6 (tag: 0.2.1) commit #2
 0ee81b0 commit #1
 ```
+
 
 In this example we can see `2245d5deb5d97d288b7926be62d051b7eed35c98` introducing a feature that will trigger a MINOR change but we can also see `0de444695e3208b74d0b3ed7fd20fd0be4b2992e` having a `BREAKING_CHANGE` that will introduce a MAJOR bump, this is the reason the tag moved from `0.2.1` to `1.0.0`
 ```
@@ -235,6 +219,15 @@ The following options will add a temporary config to this repository(local confi
                         specified the system one will be used.
 ```
 If another user interacts with git while this process is taking place it will use the temporary config, but we assume we are run in a CI pipeline and this is the only process interacting with git.
+
+# Search Strategy
+
+If you want to bump a tag first you need to find the last one, we have a few  implementations to search for the last tag that can be configured with `--tag-search-strategy` CLI option.
+
+* `biggest-tag-in-repo` consider all tags **in the repository** as semantic versions and pick the biggest one
+* `biggest-tag-in-branch` consider all tags **on the specified branch** as semantic versions and pick the biggest one
+* `latest-tag-in-repo` compare `commit date` for each commit that has a tag **in the repository** and take the latest
+* `latest-tag-in-branch` compare `commit date` for each commit that has a tag **one the specifid branch** and take the latest
 
 ---
 This project is licensed under the terms of the MIT license.

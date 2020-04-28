@@ -1,18 +1,33 @@
 [[source]]
+
 name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
 
+
 [dev-packages]
-pytest = "==5.3.2"
+
+pytest = "==5.4.1"
 pylint = "==2.4.4"
 pytest-cov = "==2.7.1"
 pytest-parallel = "==0.0.9"
 codecov = "==2.0.15"
 twine = "*"
-auto-tag = {editable = true,path = "."}
 mypy = "*"
 
+
 [packages]
-auto-tag = {editable = true,path = "."}
+
 gitpython = ">=3.1.1"
+
+
+[dev-packages.auto-tag]
+
+editable = true
+path = "."
+
+
+[packages.auto-tag]
+
+editable = true
+path = "."

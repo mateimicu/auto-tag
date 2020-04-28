@@ -49,9 +49,9 @@ setup(
         ]
     },
     install_requires=[
-        'gitpython==3.0.5',
-        'semantic_version==2.8.4',
-        'confuse==1.0.0',
-        'six==1.13.0',
+        'gitpython>=3.1.1',
+        'semantic_version>=2.8.4',
+        'confuse>=1.0.0',
+        'six>=1.13.0',
     ]
 )

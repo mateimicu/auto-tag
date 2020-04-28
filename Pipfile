@@ -15,3 +15,4 @@ mypy = "*"
 
 [packages]
 auto-tag = {editable = true,path = "."}
+gitpython = ">=3.1.1"

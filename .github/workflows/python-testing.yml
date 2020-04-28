@@ -1,0 +1,75 @@
+name: Test Python Module
+
+on: [push, pull_request]
+
+jobs:
+  lint:
+
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+      matrix:
+        python-version: [3.6, 3.7, 3.8]
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install --upgrade pipenv
+        pipenv --python python${{ matrix.python-version }} install --dev
+    - name: Start linting
+      run: |
+        pipenv run pylint --rcfile=.pylintrc auto_tag
+
+  mypy:
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+      matrix:
+        python-version: [3.6, 3.7, 3.8]
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install --upgrade pipenv
+        pipenv --python python${{ matrix.python-version }} install --dev
+    - name: MyPy type checking
+      run: |
+        pipenv run mypy auto_tag
+
+  pytest-coverage:
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+      matrix:
+        python-version: [3.6, 3.7, 3.8]
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install --upgrade pipenv
+        pipenv --python python${{ matrix.python-version }} install --dev
+    - name: Check coverage
+      env:
+        CODECOV_TOKEN : ${{ secrets.CODECOV_TOKEN }}
+      run: |
+        pipenv run pytest --cov=auto_tag
+        pipenv run codecov
+

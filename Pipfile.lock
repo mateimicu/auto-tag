@@ -353,11 +353,10 @@
         },
         "pytest-parallel": {
             "hashes": [
-                "sha256:94df6b0ebf48e03cbce66622d55ba6bd2cb116b06cfb39cc5fc4d2d310df25ca",
-                "sha256:c4226352462ae32ff01d47a642d087005c3b9bf995cea61fc37a4becb146278d"
+                "sha256:10693161e350b59466ca331bad964073555cda114cc0499bd826deeceee512ed",
+                "sha256:4663a8fb805ac98b51e51de84d35ffd9717017fb71ed270440dc94b862466c20"
             ],
-            "index": "pypi",
-            "version": "==0.0.9"
+            "version": "==0.1.0"
         },
         "pyyaml": {
             "hashes": [

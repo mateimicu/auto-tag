@@ -50,7 +50,7 @@ setup(
     },
     install_requires=[
         'gitpython>=3.1.1',
-        'semantic_version>=2.8.4',
+        'semantic_version>=2.8.5',
         'confuse>=1.0.0',
         'six>=1.13.0',
     ]

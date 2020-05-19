@@ -6,7 +6,7 @@ verify_ssl = true
 [dev-packages]
 pytest = "==5.4.1"
 pylint = "==2.5.0"
-pytest-cov = "==2.7.1"
+pytest-cov = "==2.8.1"
 pytest-parallel = "==0.1.0"
 codecov = "==2.0.22"
 twine = "*"

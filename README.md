@@ -1,5 +1,5 @@
 # Auto-Tag
-[![Updates](https://pyup.io/repos/github/mateimicu/auto-tag/shield.svg)](https://pyup.io/repos/github/mateimicu/auto-tag/)
+[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=mateimicu/auto-tag)](https://dependabot.com)
 [![Python 3](https://pyup.io/repos/github/mateimicu/auto-tag/python-3-shield.svg)](https://pyup.io/repos/github/mateimicu/auto-tag/)
 ![PyPI](https://img.shields.io/pypi/v/auto-tag)
 ![PyPI - Implementation](https://img.shields.io/pypi/implementation/auto-tag)

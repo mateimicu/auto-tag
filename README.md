@@ -1,5 +1,4 @@
 # Auto-Tag
-[![Updates](https://pyup.io/repos/github/mateimicu/auto-tag/shield.svg)](https://pyup.io/repos/github/mateimicu/auto-tag/)
 [![Python 3](https://pyup.io/repos/github/mateimicu/auto-tag/python-3-shield.svg)](https://pyup.io/repos/github/mateimicu/auto-tag/)
 ![PyPI](https://img.shields.io/pypi/v/auto-tag)
 ![PyPI - Implementation](https://img.shields.io/pypi/implementation/auto-tag)

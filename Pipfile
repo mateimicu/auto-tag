@@ -12,6 +12,7 @@ codecov = "==2.0.22"
 twine = "*"
 auto-tag = {editable = true,path = "."}
 mypy = "*"
+importlib-metadata = "*"
 
 [packages]
 auto-tag = {editable = true,path = "."}

@@ -2,11 +2,9 @@
 """
 Test simple flows of the AutoTag application
 """
-import os
 
 import git
 import pytest
-import time
 
 from auto_tag import tag_search_strategy
 from typing import Callable

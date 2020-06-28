@@ -18,7 +18,7 @@ README = open(
 # This call to setup() does all the work
 setup(
     name='auto-tag',
-    version='0.8.1',
+    version='0.8.2',
     description='Automatically tag a branch based on commit message',
     long_description=README,
     long_description_content_type='text/markdown',

@@ -81,3 +81,13 @@ jobs:
         pipenv run pytest --cov=auto_tag
         pipenv run codecov
 
+
+  auto-merge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ahmadnassri/action-dependabot-auto-merge@v2
+        with:
+          target: minor
+          approve: true
+          github-token: ${{ secrets.DEPENDABOT_AUTOAPPROVE }}

@@ -33,8 +33,7 @@ class BaseDetector():
         self._name = name
         self._change_type_name = change_type
         self._strip = strip
-        self._logger = (
-            kwargs.get('logger', None) or logging.getLogger(__name__))
+        self._logger = kwargs.get('logger') or logging.getLogger(__name__)
 
     @property
     def name(self) -> str:
@@ -89,7 +88,7 @@ class BasePatternBaseDetector(BaseDetector):
         super().__init__(
             *args, **kwargs)
 
-        self._pattern: str = kwargs.get('pattern', None)
+        self._pattern: str = kwargs.get('pattern')
 
     @property
     def pattern(self) -> str:

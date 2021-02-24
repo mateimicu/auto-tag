@@ -88,7 +88,7 @@ class BasePatternBaseDetector(BaseDetector):
         super().__init__(
             *args, **kwargs)
 
-        self._pattern: str = kwargs.get('pattern')
+        self._pattern: str = str(kwargs.get('pattern'))
 
     @property
     def pattern(self) -> str:

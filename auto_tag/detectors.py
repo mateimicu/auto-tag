@@ -86,7 +86,7 @@ class BasePatternBaseDetector(BaseDetector):
         :param *args: Check with the base class
         :param **kwargs: Check with the base class
         """
-        super(BasePatternBaseDetector, self).__init__(
+        super().__init__(
             *args, **kwargs)
 
         self._pattern: str = kwargs.get('pattern', None)
@@ -98,7 +98,7 @@ class BasePatternBaseDetector(BaseDetector):
 
     def validate_detector_params(self) -> NoReturn:
         """Check if all the parameters given to the detector make sens."""
-        super(BasePatternBaseDetector, self).validate_detector_params()
+        super().validate_detector_params()
         if not isinstance(self._pattern, str):
             raise exception.DetectorValidationException(
                 ('Patter: {} is not valid.'
@@ -117,7 +117,7 @@ class BasePatternSimpleComparationDetector(BasePatternBaseDetector):
         :param *args: Check with the base class
         :param **kwargs: Check with the base class
         """
-        super(BasePatternSimpleComparationDetector, self).__init__(
+        super().__init__(
             *args, **kwargs)
 
         self._case_sensitive: bool = kwargs.get('case_sensitive', True)
@@ -129,9 +129,7 @@ class BasePatternSimpleComparationDetector(BasePatternBaseDetector):
 
     def validate_detector_params(self) -> NoReturn:
         """Check if all the parameters given to the detector make sens."""
-        super(
-            BasePatternSimpleComparationDetector,
-            self).validate_detector_params()
+        super().validate_detector_params()
         if not isinstance(self._case_sensitive, bool):
             raise exception.DetectorValidationException(
                 ('case_sensitive: {} is not valid.'
@@ -199,15 +197,14 @@ class CommitMessageMatchesRegexDetector(BasePatternBaseDetector):
         :param *args: Check with the base class
         :param **kwargs: Check with the base class
         """
-        super(CommitMessageMatchesRegexDetector, self).__init__(
+        super().__init__(
             *args, **kwargs)
 
         self._compiled_regex = re.compile(self._pattern)
 
     def validate_detector_params(self) -> NoReturn:
         """Check if all the parameters given to the detector make sens."""
-        super(
-            CommitMessageMatchesRegexDetector, self).validate_detector_params()
+        super().validate_detector_params()
 
         if self. _compiled_regex is None:
             raise exception.DetectorValidationException(

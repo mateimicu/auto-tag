@@ -1,6 +1,4 @@
 # Auto-Tag
-[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=mateimicu/auto-tag)](https://dependabot.com)
-[![Python 3](https://pyup.io/repos/github/mateimicu/auto-tag/python-3-shield.svg)](https://pyup.io/repos/github/mateimicu/auto-tag/)
 ![PyPI](https://img.shields.io/pypi/v/auto-tag)
 ![PyPI - Implementation](https://img.shields.io/pypi/implementation/auto-tag)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/auto-tag)
@@ -12,8 +10,6 @@ Automatically tag a branch with the next semantic version tag.
 
 This is useful if you want to generate tags every time something is merged.
 Microservice and GitOps repository are good candidates for this type of action.
-
-
 
 
 # TOC

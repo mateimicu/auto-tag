@@ -8,7 +8,7 @@ pytest = "==6.2.4"
 pylint = "==2.9.3"
 pytest-cov = "==2.12.1"
 pytest-parallel = "==0.1.0"
-codecov = "==2.1.11"
+codecov = "==2.1.12"
 twine = "*"
 auto-tag = {editable = true,path = "."}
 mypy = "*"

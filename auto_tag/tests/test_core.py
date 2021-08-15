@@ -11,8 +11,10 @@ from auto_tag import core
 from auto_tag.detectors import CommitMessageContainsDetector
 from auto_tag.detectors import CommitMessageHeadStartsWithDetector
 from auto_tag import detectors
-from typing import List
-from typing import Union
+from typing import (
+    Iterable,
+    Union
+)
 from py._path.local import LocalPath
 # pylint:disable=invalid-name
 
@@ -44,7 +46,7 @@ TEST_EMAIL_2 = 'test_2@email.com'
 
 def test_simple_flow_no_existing_tag(
     simple_repo: str,
-    default_detectors: List[detectors.BaseDetector]
+    default_detectors: Iterable[detectors.BaseDetector]
 ) -> None:
     """Test a simple flow.
 
@@ -73,7 +75,7 @@ def test_simple_flow_existing_tag_and_extra_tag_on_separate_branch(
     existing_tag: str,
     next_tag: str,
     simple_repo: str,
-    default_detectors: List[detectors.BaseDetector]
+    default_detectors: Iterable[detectors.BaseDetector]
 ) -> None:
     """Test to see if only specified branch is evaluated.
 
@@ -122,7 +124,7 @@ def test_simple_flow_existing_tag_and_tag_exists_on_another_branch(
     existing_tag: str,
     next_tag: str,
     simple_repo: str,
-    default_detectors: List[detectors.BaseDetector]
+    default_detectors: Iterable[detectors.BaseDetector]
 ) -> None:
     """Test to see if only specified branch is evaluated.
 
@@ -148,7 +150,7 @@ def test_simple_flow_existing_tag(
     existing_tag: str,
     next_tag: str,
     simple_repo: str,
-    default_detectors: List[detectors.BaseDetector]
+    default_detectors: Iterable[detectors.BaseDetector]
 ) -> None:
     """Test a simple flow locally."""
     repo = git.Repo(simple_repo, odbt=git.GitDB)
@@ -174,7 +176,7 @@ def test_simple_flow_existing_tag_mixed_tags(
     existing_tag: str,
     next_tag: str,
     simple_repo: str,
-    default_detectors: List[detectors.BaseDetector]
+    default_detectors: Iterable[detectors.BaseDetector]
 ) -> None:
     """Test a simple flow locally."""
     repo = git.Repo(simple_repo, odbt=git.GitDB)
@@ -196,7 +198,7 @@ def test_simple_flow_existing_tag_mixed_tags(
 
 def test_simple_flow_existing_tag_mixed_tag(
     simple_repo: str,
-    default_detectors: List[detectors.BaseDetector]
+    default_detectors: Iterable[detectors.BaseDetector]
 ) -> None:
     """Test the support for mixed tags."""
     repo = git.Repo(simple_repo, odbt=git.GitDB)
@@ -226,7 +228,7 @@ def test_simple_flow_existing_tag_on_last_commit(
     existing_tag: str,
     next_tag: str,
     simple_repo: str,
-    default_detectors: List[detectors.BaseDetector]
+    default_detectors: Iterable[detectors.BaseDetector]
 ) -> None:
     """Test a simple flow locally."""
     repo = git.Repo(simple_repo, odbt=git.GitDB)
@@ -253,7 +255,7 @@ def test_simple_flow_existing_tag_append_v(
     existing_tag: str,
     next_tag: str,
     simple_repo: str,
-    default_detectors: List[detectors.BaseDetector]
+    default_detectors: Iterable[detectors.BaseDetector]
 ) -> None:
     """Test a simple flow locally."""
     repo = git.Repo(simple_repo, odbt=git.GitDB)
@@ -280,7 +282,7 @@ def test_simple_flow_existing_tag_minor_bump(
     existing_tag: str,
     next_tag: str,
     simple_repo_minor_commit: str,
-    default_detectors: List[detectors.BaseDetector]
+    default_detectors: Iterable[detectors.BaseDetector]
 ) -> None:
     """Test a simple flow locally."""
     repo = git.Repo(simple_repo_minor_commit, odbt=git.GitDB)
@@ -306,7 +308,7 @@ def test_simple_flow_existing_tag_major_bump(
     existing_tag: str,
     next_tag: str,
     simple_repo_major_commit: str,
-    default_detectors: List[detectors.BaseDetector]
+    default_detectors: Iterable[detectors.BaseDetector]
 ) -> None:
     """Test a simple flow locally."""
     repo = git.Repo(simple_repo_major_commit, odbt=git.GitDB)
@@ -329,7 +331,7 @@ def test_simple_flow_existing_tag_major_bump(
 def test_push_to_remote(
     simple_repo: str,
     tmpdir: LocalPath,
-    default_detectors: List[detectors.BaseDetector]
+    default_detectors: Iterable[detectors.BaseDetector]
 ) -> None:
     """Test the ability to push to remotes."""
     repo = git.Repo(simple_repo, odbt=git.GitDB)
@@ -353,7 +355,7 @@ def test_push_to_remote(
 def test_push_to_multiple_remotes(
     simple_repo: str,
     tmpdir: LocalPath,
-    default_detectors: List[detectors.BaseDetector]
+    default_detectors: Iterable[detectors.BaseDetector]
 ) -> None:
     """Test the ability to push to remotes."""
     repo = git.Repo(simple_repo, odbt=git.GitDB)
@@ -380,7 +382,7 @@ def test_push_to_multiple_remotes(
 
 def test_multiple_commits(
     simple_repo: str,
-    default_detectors: List[detectors.BaseDetector]
+    default_detectors: Iterable[detectors.BaseDetector]
 ) -> None:
     """Test to see if multiple commits with minor and major impact are handled
        properly."""
@@ -413,7 +415,7 @@ def test_multiple_commits(
 
 def test_tag_message_has_heading(
     simple_repo: str,
-    default_detectors: List[detectors.BaseDetector]
+    default_detectors: Iterable[detectors.BaseDetector]
 ) -> None:
     """Test to see if the tag message has all the commit headings."""
     repo = git.Repo(simple_repo, odbt=git.GitDB)
@@ -448,7 +450,7 @@ def test_tag_message_has_heading(
 
 def test_tag_message_user_exists_and_not_specified(
     simple_repo: str,
-    default_detectors: List[detectors.BaseDetector]
+    default_detectors: Iterable[detectors.BaseDetector]
 ) -> None:
     """Test to see if the tag message has all the commit headings."""
     repo = git.Repo(simple_repo, odbt=git.GitDB)
@@ -472,7 +474,7 @@ def test_tag_message_user_exists_and_not_specified(
 
 def test_tag_message_user_exists_and_specified(
     simple_repo: str,
-    default_detectors: List[detectors.BaseDetector]
+    default_detectors: Iterable[detectors.BaseDetector]
 ) -> None:
     """Test to see if the tag message has all the commit headings."""
     repo = git.Repo(simple_repo, odbt=git.GitDB)
@@ -496,7 +498,7 @@ def test_tag_message_user_exists_and_specified(
 
 def test_tag_message_user_exists_and_only_email_specified(
     simple_repo: str,
-    default_detectors: List[detectors.BaseDetector]
+    default_detectors: Iterable[detectors.BaseDetector]
 ) -> None:
     """Test to see if the tag message has all the commit headings."""
     repo = git.Repo(simple_repo, odbt=git.GitDB)
@@ -519,7 +521,7 @@ def test_tag_message_user_exists_and_only_email_specified(
 
 def test_tag_message_user_does_not_exists_and_specified(
     simple_repo: str,
-    default_detectors: List[detectors.BaseDetector]
+    default_detectors: Iterable[detectors.BaseDetector]
 ) -> None:
     """Test to see if the tag message has all the commit headings."""
     repo = git.Repo(simple_repo, odbt=git.GitDB)
@@ -539,7 +541,7 @@ def test_tag_message_user_does_not_exists_and_specified(
 
 def test_tag_message_user_exists_and_specify_make_sure_clean_env(
     simple_repo: str,
-    default_detectors: List[detectors.BaseDetector]
+    default_detectors: Iterable[detectors.BaseDetector]
 ) -> None:
     """Test to see if the tag message has all the commit headings."""
     repo = git.Repo(simple_repo, odbt=git.GitDB)

@@ -8,6 +8,7 @@ from typing import (
     Tuple,
     Optional,
     List,
+    Iterable,
 )
 
 import semantic_version
@@ -25,7 +26,7 @@ class AutoTag():
     def __init__(
             self, repo: str, branch: str,
             upstream_remotes: Optional[List[str]],
-            detectors: List[auto_tag_detectors.BaseDetector],
+            detectors: Iterable[auto_tag_detectors.BaseDetector],
             search_strategy: Callable = tag_search_strategy.DEFAULT_STRATEGY,  # type: ignore
             git_name: Optional[str] = None,
             git_email: Optional[str] = None,

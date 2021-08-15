@@ -13,8 +13,10 @@ from auto_tag import detectors_config
 from auto_tag import detectors
 from typing import Iterator
 from py._path.local import LocalPath
-from typing import List
-from typing import Union
+from typing import (
+    Iterable,
+    Union,
+)
 
 BRANCH_NAME_A = 'branch_a'
 BRANCH_NAME_B = 'branch_b'
@@ -48,7 +50,7 @@ def simple_repo(tmpdir: LocalPath) -> str:
 
 
 @pytest.fixture
-def default_detectors() -> List[detectors.BaseDetector]:
+def default_detectors() -> Iterable[detectors.BaseDetector]:
     """Return a simple repository with 3 basic commits and no tags."""
     config = detectors_config.DetectorsConfig.from_default()
     return config.detectors

@@ -15,6 +15,7 @@ mypy = "*"
 importlib_metadata = "*"
 types-six = "*"
 types-pyyaml = "*"
+typed-ast = "*"
 
 [packages]
 auto-tag = {editable = true,path = "."}

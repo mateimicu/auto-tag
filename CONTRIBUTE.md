@@ -30,3 +30,11 @@ pipenv run pylint --rcfile=.pylintrc auto_tag # to run PyLint
 pipenv run mypy auto_tag                      # to run the type checking
 pipenv run pytest --cov=auto_tag              # to run the tests
 ```
+
+In CI we are running again multiple python version so in the end this is the most reliable way to see all the resets.
+
+
+#### How to open a PR or an Issue
+
+For both Pull Requests and Issue's we have templates that should guide you though the decimation process.
+Pull Requests will usually be reviews only if the CI is passing but Issues will be addresses on a best effort basis.

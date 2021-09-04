@@ -30,7 +30,7 @@ class DetectorsConfig():
     @classmethod
     def from_file(cls, filepath: str, logger: Optional[Any] = None) -> Any:
         """Read config from a file."""
-        with open(filepath, 'r') as file_stream:
+        with open(filepath, 'r', encoding="locale") as file_stream:
             return cls(file_stream.read(), logger)
 
     @classmethod

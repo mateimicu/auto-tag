@@ -7,7 +7,7 @@ verify_ssl = true
 pytest = "==6.2.5"
 pylint = "==2.10.2"
 pytest-cov = "==2.12.1"
-pytest-parallel = "==0.1.0"
+pytest-parallel = "==0.1.1"
 codecov = "==2.1.12"
 twine = "*"
 auto-tag = {editable = true,path = "."}

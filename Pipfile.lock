@@ -251,7 +251,7 @@
         },
         "coverage": {
             "extras": [
-                "toml"
+
             ],
             "hashes": [
                 "sha256:0895ea6e6f7f9939166cc835df8fa4599e2d9b759b02d1521b574e13b859ac32",
@@ -766,11 +766,11 @@
         },
         "types-pyyaml": {
             "hashes": [
-                "sha256:18985a382c93fb12187daae6f57ce7787e3651cd590291c907d3e757919689ff",
-                "sha256:a1676caeb098096833fe2f1472e7ea8debf7663222964fa90545cfaafebf3385"
+                "sha256:7f7da2fd11e9bc1e5e9eb3ea1be84f4849747017a59fc2eee0ea34ed1147c2e0",
+                "sha256:8f890028123607379c63550179ddaec4517dc751f4c527a52bb61934bf495989"
             ],
             "index": "pypi",
-            "version": "==6.0.10"
+            "version": "==6.0.11"
         },
         "types-six": {
             "hashes": [

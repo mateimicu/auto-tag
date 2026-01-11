@@ -5,7 +5,7 @@ permissions:
   contents: write
 jobs:
   dependabot:
-    runs-on: ubicloud-standard-2
+    runs-on: ubuntu-latest
     if: ${{ github.actor == 'dependabot[bot]' }}
     steps:
       - name: Dependabot metadata

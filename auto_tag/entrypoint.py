@@ -2,15 +2,15 @@
 """
 Package entry point.
 """
-from typing import List
-import sys
+
 import logging
 import logging.config
+import sys
 
-from auto_tag import core, cli, detectors_config, tag_search_strategy
+from auto_tag import cli, core, detectors_config, tag_search_strategy
 
 
-def main(cli_args: List[str]) -> None:
+def main(cli_args: list[str]) -> None:
     """Main entry point for Auto-Tag module."""
 
     parser = cli.get_parser()
@@ -23,8 +23,7 @@ def main(cli_args: List[str]) -> None:
     console_handler.setLevel(logging.DEBUG)
 
     # create formatter
-    formatter = logging.Formatter(
-        '%(asctime)s: %(message)s')
+    formatter = logging.Formatter("%(asctime)s: %(message)s")
 
     # add formatter to console_handler
     console_handler.setFormatter(formatter)
@@ -33,25 +32,25 @@ def main(cli_args: List[str]) -> None:
     logger.addHandler(console_handler)
 
     if args.config:
-        config = detectors_config.DetectorsConfig.from_file(
-            args.config)
+        config = detectors_config.DetectorsConfig.from_file(args.config)
     else:
         config = detectors_config.DetectorsConfig.from_default()
 
-    search_strategy = tag_search_strategy.SEARCH_METHODS_MAPPING[
-        args.tag_search_strategy]
+    search_strategy = tag_search_strategy.SEARCH_METHODS_MAPPING[args.tag_search_strategy]
     autotag = core.AutoTag(
-        repo=args.repo, branch=args.branch,
+        repo=args.repo,
+        branch=args.branch,
         upstream_remotes=args.upstream_remote,
         detectors=config.detectors,
         search_strategy=search_strategy,  # type: ignore
-        git_name=args.name, git_email=args.email,
+        git_name=args.name,
+        git_email=args.email,
         append_v=args.append_v_to_tag,
         skip_if_exists=args.skip_tag_if_one_already_present,
-        logger=logger
+        logger=logger,
     )
     autotag.work()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(sys.argv[1:])

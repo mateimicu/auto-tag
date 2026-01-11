@@ -2,15 +2,16 @@
 """
 Package entry point.
 """
+
 import sys
 
 from auto_tag import entrypoint
 
 
-def main():
+def main() -> None:
     """Main entry point for module and cli."""
     entrypoint.main(sys.argv[1:])
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

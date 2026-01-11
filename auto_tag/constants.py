@@ -2,20 +2,21 @@
 """
 Constants used in the AutoTag project
 """
+
 MAJOR = 100
 MINOR = 10
 PATCH = 1
 
 CHANGE_TYPE_PAIRS = (
-    (MAJOR, 'MAJOR'),
-    (MINOR, 'MINOR'),
-    (PATCH, 'PATCH'),
+    (MAJOR, "MAJOR"),
+    (MINOR, "MINOR"),
+    (PATCH, "PATCH"),
 )
 
-SEARCH_STRATEGY_BIGGEST_TAG_IN_REPO = 'biggest-tag-in-repo'
-SEARCH_STRATEGY_BIGGEST_TAG_IN_BRANCH = 'biggest-tag-in-branch'
-SEARCH_STRATEGY_LATEST_TAG_IN_REPO = 'latest-tag-in-repo'
-SEARCH_STRATEGY_LATEST_TAG_IN_BRANCH = 'latest-tag-in-branch'
+SEARCH_STRATEGY_BIGGEST_TAG_IN_REPO = "biggest-tag-in-repo"
+SEARCH_STRATEGY_BIGGEST_TAG_IN_BRANCH = "biggest-tag-in-branch"
+SEARCH_STRATEGY_LATEST_TAG_IN_REPO = "latest-tag-in-repo"
+SEARCH_STRATEGY_LATEST_TAG_IN_BRANCH = "latest-tag-in-branch"
 
 SEARCH_STRATEGYS = [
     SEARCH_STRATEGY_BIGGEST_TAG_IN_REPO,
@@ -27,7 +28,7 @@ SEARCH_STRATEGYS = [
 CHANGE_TYPES = dict(CHANGE_TYPE_PAIRS)
 CHANGE_TYPES_REVERSE = {name: value for value, name in CHANGE_TYPE_PAIRS}
 
-PREFIX_TO_ELIMINATE = ['v']
+PREFIX_TO_ELIMINATE = ["v"]
 
 DEFAULT_CONFIG_DETECTORS = """
 detectors:

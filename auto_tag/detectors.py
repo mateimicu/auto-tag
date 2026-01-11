@@ -4,22 +4,21 @@ Change type detectors.
 
 Parses a configuration with what type of change do you want to produce.
 """
-from typing import Any, NoReturn
+
 import abc
 import logging
 import re
+from typing import Any, NoReturn
 
 import git
 
-from auto_tag import constants
-from auto_tag import exception
+from auto_tag import constants, exception
 
 
 class BaseDetector(abc.ABC):
     """Base detector class."""
 
-    def __init__(self, name: str, change_type: str,
-                 strip: bool = True, **kwargs: Any) -> None:
+    def __init__(self, name: str, change_type: str, strip: bool = True, **kwargs: Any) -> None:
         """Initialize the detector."
 
         :param name: Name of the detector
@@ -31,7 +30,7 @@ class BaseDetector(abc.ABC):
         self._name = name
         self._change_type_name = change_type
         self._strip = strip
-        self._logger = kwargs.get('logger') or logging.getLogger(__name__)
+        self._logger = kwargs.get("logger") or logging.getLogger(__name__)
 
     @property
     def name(self) -> str:
@@ -53,13 +52,13 @@ class BaseDetector(abc.ABC):
         """Return the type of change this detector imposes."""
         return constants.CHANGE_TYPES_REVERSE[self._change_type_name]
 
-    def validate_detector_params(self) -> NoReturn: # type: ignore
+    def validate_detector_params(self) -> NoReturn:  # type: ignore
         """Check if all the parameters given to the detector make sens."""
         if self._change_type_name not in constants.CHANGE_TYPES.values():
             raise exception.DetectorValidationException(
-                ('Change type {} is not in not valid. Accepted'
-                 ' change types are {}').format(
-                     self._change_type_name, constants.CHANGE_TYPES.keys()))
+                f"Change type {self._change_type_name} is not in not valid. Accepted"
+                f" change types are {constants.CHANGE_TYPES.keys()}"
+            )
 
     @abc.abstractmethod
     def evaluate(self, commit: git.objects.commit.Commit) -> bool:
@@ -83,10 +82,9 @@ class BasePatternBaseDetector(BaseDetector):
         :param *args: Check with the base class
         :param **kwargs: Check with the base class
         """
-        super().__init__(
-            *args, **kwargs)
+        super().__init__(*args, **kwargs)
 
-        self._pattern: str = str(kwargs.get('pattern'))
+        self._pattern: str = str(kwargs.get("pattern"))
 
     @property
     def pattern(self) -> str:
@@ -98,9 +96,8 @@ class BasePatternBaseDetector(BaseDetector):
         super().validate_detector_params()
         if not isinstance(self._pattern, str):
             raise exception.DetectorValidationException(
-                ('Patter: {} is not valid.'
-                 'it must be specified and of type string').format(
-                     self._pattern))
+                f"Patter: {self._pattern} is not valid.it must be specified and of type string"
+            )
 
 
 class BasePatternSimpleComparationDetector(BasePatternBaseDetector):
@@ -114,10 +111,9 @@ class BasePatternSimpleComparationDetector(BasePatternBaseDetector):
         :param *args: Check with the base class
         :param **kwargs: Check with the base class
         """
-        super().__init__(
-            *args, **kwargs)
+        super().__init__(*args, **kwargs)
 
-        self._case_sensitive: bool = kwargs.get('case_sensitive', True)
+        self._case_sensitive: bool = kwargs.get("case_sensitive", True)
 
     @property
     def case_sensitive(self) -> bool:
@@ -129,9 +125,8 @@ class BasePatternSimpleComparationDetector(BasePatternBaseDetector):
         super().validate_detector_params()
         if not isinstance(self._case_sensitive, bool):
             raise exception.DetectorValidationException(
-                ('case_sensitive: {} is not valid.'
-                 'it must be of type bool').format(
-                     self._case_sensitive))
+                f"case_sensitive: {self._case_sensitive} is not valid.it must be of type bool"
+            )
 
     def __prepare_text(self, text: str) -> str:
         """Prepare a text according to the config."""
@@ -143,11 +138,12 @@ class BasePatternSimpleComparationDetector(BasePatternBaseDetector):
 
     def _prepare_commit_message(self, commit: git.objects.commit.Commit) -> str:
         """Get the prepared commit message according to the config."""
-        return self.__prepare_text(commit.message)
+        message = commit.message
+        msg_str = message if isinstance(message, str) else message.decode("utf-8")
+        return self.__prepare_text(msg_str)
 
 
-class CommitMessageHeadStartsWithDetector(
-        BasePatternSimpleComparationDetector):
+class CommitMessageHeadStartsWithDetector(BasePatternSimpleComparationDetector):
     """Check if the head of the commit message has a particular pattern."""
 
     def evaluate(self, commit: git.objects.commit.Commit) -> bool:
@@ -194,8 +190,7 @@ class CommitMessageMatchesRegexDetector(BasePatternBaseDetector):
         :param *args: Check with the base class
         :param **kwargs: Check with the base class
         """
-        super().__init__(
-            *args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self._compiled_regex = re.compile(self._pattern)
 
@@ -203,10 +198,10 @@ class CommitMessageMatchesRegexDetector(BasePatternBaseDetector):
         """Check if all the parameters given to the detector make sens."""
         super().validate_detector_params()
 
-        if self. _compiled_regex is None:
+        if self._compiled_regex is None:
             raise exception.DetectorValidationException(
-                ('Patter: {} is not valid regex.'
-                 'it must be specified and compliant').format(self._pattern))
+                f"Patter: {self._pattern} is not valid regex.it must be specified and compliant"
+            )
 
     def evaluate(self, commit: git.objects.commit.Commit) -> bool:
         """Check if the commit message matches a regex pattern
@@ -216,7 +211,9 @@ class CommitMessageMatchesRegexDetector(BasePatternBaseDetector):
         :returns: True if this detector got triggered
         :rtype: book
         """
-        return bool(self._compiled_regex.search(commit.message))
+        message = commit.message
+        msg_str = message if isinstance(message, str) else message.decode("utf-8")
+        return bool(self._compiled_regex.search(msg_str))
 
 
 DETECTORS = [
@@ -237,6 +234,6 @@ def detector_factory(detector_name: str) -> abc.ABCMeta:
 
     if detector_name not in detector_map:
         raise exception.DetectorNotFound(
-            'Detector {} not found. Available detectors: {}'.format(
-                detector_name, detector_map.keys()))
+            f"Detector {detector_name} not found. Available detectors: {detector_map.keys()}"
+        )
     return detector_map[detector_name]

@@ -2,21 +2,16 @@
 """
 Fixtures used to test AutoTag module.
 """
-import os
 import time
 from email.utils import formatdate
+from pathlib import Path
+from typing import Iterable
 
 import git
 import pytest
 
 from auto_tag import detectors_config
 from auto_tag import detectors
-from typing import Iterator
-from py._path.local import LocalPath
-from typing import (
-    Iterable,
-    Union,
-)
 
 BRANCH_NAME_A = 'branch_a'
 BRANCH_NAME_B = 'branch_b'
@@ -34,19 +29,17 @@ TAGS = {
 
 
 @pytest.fixture
-def simple_repo(tmpdir: LocalPath) -> str:
+def simple_repo(tmp_path: Path) -> str:
     """Return a simple repository with 3 basic commits and no tags."""
-    repo_path = os.path.join(tmpdir, 'test-repo')
-    repo = git.Repo.init(repo_path)
+    repo_path = tmp_path / 'test-repo'
+    repo = git.Repo.init(str(repo_path), initial_branch='master')
 
     for commit_id in range(3):
-        file_path = os.path.join(
-            tmpdir, 'test-repo', 'f_{}'.format(str(commit_id)))
-        commit_text = 'commit #{}'.format(str(commit_id))
-        open(file_path, 'w+').close()
-        repo.index.commit(commit_text)
+        file_path = repo_path / f'f_{commit_id}'
+        file_path.touch()
+        repo.index.commit(f'commit #{commit_id}')
 
-    return repo_path
+    return str(repo_path)
 
 
 @pytest.fixture
@@ -60,11 +53,11 @@ def default_detectors() -> Iterable[detectors.BaseDetector]:
 def simple_repo_minor_commit(simple_repo: str) -> str:
     """Return a simple repository with 3 basic commits and no tags."""
     repo = git.Repo(simple_repo)
+    repo_path = Path(simple_repo)
 
-    file_path = os.path.join(simple_repo, 'f_{}'.format('minor'))
-    commit_text = 'feature(minor): this must trigger a minor change'
-    open(file_path, 'w+').close()
-    repo.index.commit(commit_text)
+    file_path = repo_path / 'f_minor'
+    file_path.touch()
+    repo.index.commit('feature(minor): this must trigger a minor change')
 
     return simple_repo
 
@@ -73,11 +66,11 @@ def simple_repo_minor_commit(simple_repo: str) -> str:
 def simple_repo_major_commit(simple_repo: str) -> str:
     """Return a simple repository with 3 basic commits and no tags."""
     repo = git.Repo(simple_repo)
+    repo_path = Path(simple_repo)
 
-    file_path = os.path.join(simple_repo, 'f_{}'.format('minor'))
-    commit_text = 'this must trigger a minor change \n BREAKING_CHANGE'
-    open(file_path, 'w+').close()
-    repo.index.commit(commit_text)
+    file_path = repo_path / 'f_major'
+    file_path.touch()
+    repo.index.commit('this must trigger a minor change \n BREAKING_CHANGE')
 
     return simple_repo
 
@@ -86,6 +79,7 @@ def simple_repo_major_commit(simple_repo: str) -> str:
 def simple_repo_two_branches(simple_repo: str) -> str:
     """Return a repository with two branches."""
     repo = git.Repo(simple_repo, odbt=git.GitDB)
+    repo_path = Path(simple_repo)
     # NOTE(mmicu): because we only have seconds granularity
     # we specifically add on second to every commit_date
     commit_date = int(time.time())
@@ -96,14 +90,12 @@ def simple_repo_two_branches(simple_repo: str) -> str:
         current.checkout()
 
         for tag in TAGS[branch_name]:
-            file_path = os.path.join(simple_repo, 'f_{}_{}'.format(
-                branch_name, tag))
-            commit_text = 'random commit for {} {}'.format(
-                branch_name, tag)
-            open(file_path, 'w+').close()
+            file_path = repo_path / f'f_{branch_name}_{tag}'
+            file_path.touch()
 
             commit = repo.index.commit(
-                commit_text, commit_date=formatdate(commit_date))
+                f'random commit for {branch_name} {tag}',
+                commit_date=formatdate(commit_date))
             commit_date += 1
             repo.create_tag(tag, ref=commit)
 

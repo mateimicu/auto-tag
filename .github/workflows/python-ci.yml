@@ -12,71 +12,57 @@ on:
 
 jobs:
   lint:
-
-    runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 4
-      matrix:
-        python-version: [3.7, 3.8, 3.9]
-
+    runs-on: ubicloud-standard-2
     steps:
-    - uses: actions/checkout@v1
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v1
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v5
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: "3.12"
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install --upgrade pipenv
-        pipenv --python python${{ matrix.python-version }} install --dev
-    - name: Start linting
+        pip install -e ".[dev]"
+    - name: Run ruff linting
       run: |
-        pipenv run pylint --rcfile=.pylintrc auto_tag
+        ruff check auto_tag
+    - name: Run ruff format check
+      run: |
+        ruff format --check auto_tag
 
   mypy:
-    runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 4
-      matrix:
-        python-version: [3.7, 3.8, 3.9]
-
+    runs-on: ubicloud-standard-2
     steps:
-    - uses: actions/checkout@v1
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v1
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v5
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: "3.12"
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install --upgrade pipenv
-        pipenv --python python${{ matrix.python-version }} install --dev
+        pip install -e ".[dev]"
     - name: MyPy type checking
       run: |
-        pipenv run mypy auto_tag
+        mypy auto_tag
 
   pytest-coverage:
-    runs-on: ubuntu-latest
+    runs-on: ubicloud-standard-2
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [3.7, 3.8, 3.9]
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install --upgrade pipenv
-        pipenv --python python${{ matrix.python-version }} install --dev
+        pip install -e ".[dev]"
     - name: Check coverage
-      env:
-        CODECOV_TOKEN : ${{ secrets.CODECOV_TOKEN }}
       run: |
-        pipenv run pytest --cov=auto_tag
-        pipenv run codecov
+        pytest --cov=auto_tag

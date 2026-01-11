@@ -2,21 +2,16 @@
 """
 Test simple flows of the AutoTag application
 """
-import os
+from pathlib import Path
+from typing import Iterable
 
 import git
 import pytest
 
 from auto_tag import core
+from auto_tag import detectors
 from auto_tag.detectors import CommitMessageContainsDetector
 from auto_tag.detectors import CommitMessageHeadStartsWithDetector
-from auto_tag import detectors
-from typing import (
-    Iterable,
-    Union
-)
-from py._path.local import LocalPath
-# pylint:disable=invalid-name
 
 BIG_TAG = '100.100.100'
 
@@ -99,9 +94,9 @@ def test_simple_flow_existing_tag_and_extra_tag_on_separate_branch(
     repo.head.reference = new_branch
     # repo.head.reset(index=False, working_tree=False)
 
-    file_path = os.path.join(simple_repo, 'extra_file')
+    file_path = Path(simple_repo) / 'extra_file'
     commit_text = 'commit an extra file'
-    open(file_path, 'w+').close()
+    file_path.touch()
     extra_commit = repo.index.commit(commit_text)
     repo.create_tag(BIG_TAG, extra_commit)
 
@@ -330,17 +325,17 @@ def test_simple_flow_existing_tag_major_bump(
 
 def test_push_to_remote(
     simple_repo: str,
-    tmpdir: LocalPath,
+    tmp_path: Path,
     default_detectors: Iterable[detectors.BaseDetector]
 ) -> None:
     """Test the ability to push to remotes."""
     repo = git.Repo(simple_repo, odbt=git.GitDB)
-    cloned_repo_path = os.path.join(tmpdir, 'cloned-repo')
+    cloned_repo_path = tmp_path / 'cloned-repo'
 
-    cloned_repo = repo.clone(cloned_repo_path)
+    cloned_repo = repo.clone(str(cloned_repo_path))
 
     autotag = core.AutoTag(
-        repo=cloned_repo_path,
+        repo=str(cloned_repo_path),
         branch='master',
         upstream_remotes=['origin'],
         detectors=default_detectors,
@@ -354,20 +349,20 @@ def test_push_to_remote(
 
 def test_push_to_multiple_remotes(
     simple_repo: str,
-    tmpdir: LocalPath,
+    tmp_path: Path,
     default_detectors: Iterable[detectors.BaseDetector]
 ) -> None:
     """Test the ability to push to remotes."""
     repo = git.Repo(simple_repo, odbt=git.GitDB)
-    cloned_repo_path = os.path.join(tmpdir, 'cloned-repo')
-    second_remote_path = os.path.join(tmpdir, 'second_remote')
+    cloned_repo_path = tmp_path / 'cloned-repo'
+    second_remote_path = tmp_path / 'second_remote'
 
-    cloned_repo = repo.clone(cloned_repo_path)
-    second_remote = git.Repo.init(second_remote_path, odbt=git.GitDB)
+    cloned_repo = repo.clone(str(cloned_repo_path))
+    second_remote = git.Repo.init(str(second_remote_path), odbt=git.GitDB)
 
     cloned_repo.create_remote('second_remote', second_remote.common_dir)
     autotag = core.AutoTag(
-        repo=cloned_repo_path,
+        repo=str(cloned_repo_path),
         branch='master',
         upstream_remotes=['origin', 'second_remote'],
         detectors=default_detectors,
@@ -392,9 +387,8 @@ def test_multiple_commits(
             'feature(m1): this is a feature it trigger a minor update',
             'fix(m1): a fix is triggering a patch',
             'fix(m1): fix with a breaking change \n BREAKING_CHANGE']:
-        file_path = os.path.join(
-            repo.working_dir, 'f_{}'.format(message[:4]))
-        open(file_path, 'w+').close()
+        file_path = Path(repo.working_dir) / f'f_{message[:4]}'
+        file_path.touch()
         repo.index.commit(message)
 
     repo.create_tag(
@@ -429,9 +423,8 @@ def test_tag_message_has_heading(
         'fix(m1): with a breaking change \n BREAKING_CHANGE \n even more'
     ]
     for message in messages:
-        file_path = os.path.join(
-            repo.working_dir, 'f_{}'.format(message[:4]))
-        open(file_path, 'w+').close()
+        file_path = Path(repo.working_dir) / f'f_{message[:4]}'
+        file_path.touch()
         repo.index.commit(message)
 
     autotag = core.AutoTag(

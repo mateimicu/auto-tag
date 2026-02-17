@@ -8,16 +8,13 @@ from typing import Any, NoReturn
 import abc
 import logging
 import re
-import six
-
 import git
 
 from auto_tag import constants
 from auto_tag import exception
 
 
-@six.add_metaclass(abc.ABCMeta)
-class BaseDetector():
+class BaseDetector(metaclass=abc.ABCMeta):
     """Base detector class."""
 
     def __init__(self, name: str, change_type: str,

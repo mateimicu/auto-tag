@@ -13,7 +13,6 @@ twine = "*"
 auto-tag = {editable = true,path = "."}
 mypy = "*"
 importlib_metadata = "*"
-types-six = "*"
 types-pyyaml = "*"
 
 

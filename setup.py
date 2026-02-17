@@ -29,9 +29,9 @@ setup(
     classifiers=[
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
         'Development Status :: 3 - Alpha',
         'Environment :: MacOS X',
         'Environment :: Console',
@@ -43,6 +43,7 @@ setup(
         'Topic :: Software Development :: Version Control :: Git',
         'Topic :: System :: Software Distribution',
     ],
+    python_requires='>=3.10',
     packages=find_packages(exclude=('tests',)),
     include_package_data=True,
     entry_points={

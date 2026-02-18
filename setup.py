@@ -54,5 +54,6 @@ setup(
     install_requires=[
         'gitpython>=3.1.18',
         'semantic_version>=2.8.5',
+        'pyyaml>=5.1',
     ]
 )

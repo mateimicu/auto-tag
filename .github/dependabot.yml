@@ -8,3 +8,11 @@ updates:
       - "mateimicu"
     reviewers:
       - "mateimicu"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    assignees:
+      - "mateimicu"
+    reviewers:
+      - "mateimicu"

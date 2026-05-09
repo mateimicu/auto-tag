@@ -18,5 +18,5 @@ types-pyyaml = "*"
 
 [packages]
 auto-tag = {editable = true,path = "."}
-gitpython = ">=3.1.1"
+gitpython = ">=3.1.50"
 pyyaml = ">=5.1"
